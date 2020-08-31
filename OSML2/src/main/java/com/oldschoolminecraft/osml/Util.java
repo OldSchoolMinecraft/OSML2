@@ -79,7 +79,7 @@ public class Util
     
     public static File getJavaHome()
     {
-        return new File(System.getenv("JAVA_HOME"));
+        return new File(System.getenv("JAVA_HOME") == null ? "./jre" : System.getenv("JAVA_HOME"));
     }
     
     public static String getLinuxHomeDirectory()
