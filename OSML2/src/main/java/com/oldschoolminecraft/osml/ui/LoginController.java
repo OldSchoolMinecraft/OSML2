@@ -11,6 +11,10 @@ import com.oldschoolminecraft.osml.launch.Launcher;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -19,6 +23,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 @SuppressWarnings("all")
 public class LoginController
@@ -48,8 +56,6 @@ public class LoginController
     
     @FXML protected void handleLoginAction(ActionEvent event)
     {
-        System.out.println("Login action");
-        
         if (!Main.loggedIn)
         {
             String username = txtUsername.getText();
@@ -102,12 +108,60 @@ public class LoginController
     
     @FXML protected void handleSettingsAction(ActionEvent event)
     {
-        System.out.println("Settings action");
+        try
+        {
+            Stage stage = new Stage();
+            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/SettingsUI.fxml"));
+            Parent root = loader.load();
+            
+            Scene scene = new Scene(root, 545, 286);
+            
+            stage.setTitle("Settings");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            
+            stage.initOwner(Main.stage);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((screenBounds.getWidth() - root.prefWidth(545)) / 2);
+            stage.setY((screenBounds.getHeight() - root.prefHeight(286)) / 2);
+            
+            stage.showAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
     @FXML protected void handleCosmeticsAction(ActionEvent event)
     {
-        System.out.println("Cosmetics action");
+        try
+        {
+            Stage stage = new Stage();
+            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/CosmeticsUI.fxml"));
+            Parent root = loader.load();
+            
+            Scene scene = new Scene(root, 178, 160);
+            
+            stage.setTitle("Cosmetics");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            
+            stage.initOwner(Main.stage);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((screenBounds.getWidth() - root.prefWidth(178)) / 2);
+            stage.setY((screenBounds.getHeight() - root.prefHeight(160)) / 2);
+            
+            stage.showAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
     public Pane getBackground()

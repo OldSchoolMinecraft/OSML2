@@ -56,10 +56,7 @@ public class Main extends Application
             Main.stage = stage;
             
             // remove windows border
-            stage.initStyle(StageStyle.TRANSPARENT);
-            
-            //TODO: auto login
-            
+            stage.initStyle(StageStyle.UNDECORATED);
             
             ObjectMapper mapper = new ObjectMapper();
             
@@ -97,7 +94,7 @@ public class Main extends Application
             stage.setScene(scene);
             
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            stage.setX((screenBounds.getWidth() - root.prefWidth(350)) / 2); 
+            stage.setX((screenBounds.getWidth() - root.prefWidth(350)) / 2);
             stage.setY((screenBounds.getHeight() - root.prefHeight(400)) / 2);
             
             root.setOnMousePressed(new EventHandler<MouseEvent>()
@@ -133,9 +130,23 @@ public class Main extends Application
     {
         try
         {
-            authFile.delete();
+            if (authFile.exists())
+                authFile.delete();
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(authFile, authDataFile);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public static void saveConfig()
+    {
+        try
+        {
+            if (configFile.exists())
+                configFile.delete();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(configFile, config);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -1,25 +1,42 @@
-plugins
+buildscript
 {
-    id 'java-library'
-    id 'java'
-    id 'eclipse'
+    dependencies
+	{
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+		
+		classpath group: 'org.json', name: 'json', version: '20200518'
+		classpath group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.2'
+		classpath group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
+    }
+	
+    repositories
+	{
+        mavenLocal()
+        mavenCentral()
+		jcenter()
+    }
 }
 
-version = '1.0'
+apply plugin: 'java'
 
 repositories
 {
-    jcenter()
+    mavenLocal()
     mavenCentral()
-    flatDir {
-       dirs 'libs'
-       dirs "${System.env.JAVA_HOME}/jre/lib/ext"
-   }
+	jcenter()
 }
 
 configurations
 {
     extraLibs
+}
+
+jar
+{
+	from
+	{
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 dependencies
@@ -31,22 +48,15 @@ dependencies
 	extraLibs group: 'org.json', name: 'json', version: '20200518'
 	extraLibs group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.2'
 	extraLibs group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
-	
-	implementation name: 'jfxrt'
-	extraLibs name: 'jfxrt'
 }
 
-jar
+apply plugin: 'javafx-gradle-plugin'
+
+jfx
 {
-	from
-	{
-        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+	usePatchedJFXAntLib = false
 	
-    manifest
-    {
-        attributes 'Implementation-Title': 'OSML',  
-        	'Implementation-Version': version,
-        	'Main-Class': 'com.oldschoolminecraft.osml.Main'
-    }
+    mainClass = 'com.oldschoolminecraft.osml.Main'
+    
+    vendor = 'Old School Minecraft'
 }
