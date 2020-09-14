@@ -7,6 +7,9 @@ import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.MojangAPI;
 import com.oldschoolminecraft.osml.ui.LoginController;
 import com.oldschoolminecraft.osml.ui.UpdateController;
+import com.oldschoolminecraft.osml.util.Configuration;
+import com.oldschoolminecraft.osml.util.JSONWebResponse;
+import com.oldschoolminecraft.osml.util.Util;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;

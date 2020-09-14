@@ -3,11 +3,11 @@ package com.oldschoolminecraft.osml.ui;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oldschoolminecraft.osml.JSONWebResponse;
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.MojangAPI;
 import com.oldschoolminecraft.osml.launch.Launcher;
+import com.oldschoolminecraft.osml.util.JSONWebResponse;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

@@ -2,8 +2,8 @@ package com.oldschoolminecraft.osml.auth;
 
 import org.json.JSONObject;
 
-import com.oldschoolminecraft.osml.JSONWebResponse;
-import com.oldschoolminecraft.osml.Util;
+import com.oldschoolminecraft.osml.util.JSONWebResponse;
+import com.oldschoolminecraft.osml.util.Util;
 
 public class MojangAPI
 {

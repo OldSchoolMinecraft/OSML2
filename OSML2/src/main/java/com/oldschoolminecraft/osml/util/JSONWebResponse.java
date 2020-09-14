@@ -1,4 +1,4 @@
-package com.oldschoolminecraft.osml;
+package com.oldschoolminecraft.osml.util;
 
 import org.json.JSONObject;
 

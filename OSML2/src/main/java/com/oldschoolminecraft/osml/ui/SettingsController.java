@@ -3,9 +3,9 @@ package com.oldschoolminecraft.osml.ui;
 import java.awt.Desktop;
 import java.io.File;
 
-import com.oldschoolminecraft.osml.Configuration;
 import com.oldschoolminecraft.osml.Main;
-import com.oldschoolminecraft.osml.Util;
+import com.oldschoolminecraft.osml.util.Configuration;
+import com.oldschoolminecraft.osml.util.Util;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;

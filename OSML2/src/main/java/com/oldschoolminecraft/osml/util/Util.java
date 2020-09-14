@@ -1,4 +1,4 @@
-package com.oldschoolminecraft.osml;
+package com.oldschoolminecraft.osml.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,8 +13,6 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.json.JSONObject;
-
-import com.oldschoolminecraft.osml.util.OS;
 
 public class Util
 {

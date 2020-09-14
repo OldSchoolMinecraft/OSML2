@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.oldschoolminecraft.osml.Main;
-import com.oldschoolminecraft.osml.Util;
+import com.oldschoolminecraft.osml.util.Util;
 
 public class Launcher
 {
