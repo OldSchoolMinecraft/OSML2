@@ -2,7 +2,9 @@ package com.oldschoolminecraft.osml;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -131,6 +133,43 @@ public class Util
             JSONObject obj = new JSONObject();
             obj.put("error", "Something went wrong: " + ex.getMessage());
             return new JSONWebResponse(0, obj);
+        }
+    }
+    
+    public static void downloadFile(String url, String path, boolean deleteIfExists)
+    {
+        try
+        {
+            File targetFile = new File(path);
+            if (targetFile.exists() && deleteIfExists)
+                targetFile.delete();
+            
+            URL fileURL = new URL(url);
+            HttpURLConnection httpConn = (HttpURLConnection) fileURL.openConnection();
+            httpConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+            int responseCode = httpConn.getResponseCode();
+     
+            if (responseCode == HttpURLConnection.HTTP_OK)
+            {
+                InputStream inputStream = httpConn.getInputStream();
+                String saveFilePath = path;
+                FileOutputStream outputStream = new FileOutputStream(saveFilePath);
+     
+                int bytesRead = -1;
+                byte[] buffer = new byte[4096];
+                while ((bytesRead = inputStream.read(buffer)) != -1)
+                    outputStream.write(buffer, 0, bytesRead);
+     
+                outputStream.close();
+                inputStream.close();
+                
+                System.out.println(String.format("Downloaded file '%s' to '%s'", url, path));
+            } else {
+                System.out.println(String.format("Download failed ('%s'): HTTP code was '%s'", url, responseCode));
+            }
+            httpConn.disconnect();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

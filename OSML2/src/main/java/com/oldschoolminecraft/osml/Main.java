@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.MojangAPI;
 import com.oldschoolminecraft.osml.ui.LoginController;
+import com.oldschoolminecraft.osml.ui.UpdateController;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -27,6 +28,8 @@ import javafx.stage.StageStyle;
 @SuppressWarnings("all")
 public class Main extends Application
 {
+    public static String CURRENT_VERSION = "1.0.0";
+    
     public static boolean loggedIn = false;
     public static AuthFile authDataFile;
     public static Configuration config;
@@ -119,6 +122,9 @@ public class Main extends Application
             
             stage.show();
             
+            // set version label
+            loginController.getVersionLabel().setText("v" + CURRENT_VERSION);
+            
             setLoggedIn(loggedIn);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -168,6 +174,9 @@ public class Main extends Application
         loginController.getLogoutButton().setVisible(flag ? true : false);
         loginController.getSettingsButton().setDisable(flag ? false : true);
         loginController.getCosmeticsButton().setDisable(flag ? false : true);
+        
+        // disable access to cosmetics manager until its complete
+        loginController.getCosmeticsButton().setDisable(true);
         
         if (flag)
         {

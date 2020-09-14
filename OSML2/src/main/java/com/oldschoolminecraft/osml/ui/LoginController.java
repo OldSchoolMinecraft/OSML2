@@ -10,8 +10,10 @@ import com.oldschoolminecraft.osml.auth.MojangAPI;
 import com.oldschoolminecraft.osml.launch.Launcher;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -22,6 +24,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -34,6 +37,8 @@ public class LoginController
     @FXML protected Pane background;
     @FXML protected Pane logoPane;
     @FXML protected Pane playerPreview;
+    
+    @FXML protected Label lblVersion;
     
     @FXML protected TextField txtUsername;
     @FXML protected PasswordField txtPassword;
@@ -106,6 +111,7 @@ public class LoginController
         Main.setLoggedIn(false);
     }
     
+    private double settingsXOffset, settingsYOffset;
     @FXML protected void handleSettingsAction(ActionEvent event)
     {
         try
@@ -125,9 +131,31 @@ public class LoginController
             stage.initStyle(StageStyle.UNDECORATED);
             stage.initModality(Modality.APPLICATION_MODAL);
             
-            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            stage.setX((screenBounds.getWidth() - root.prefWidth(545)) / 2);
-            stage.setY((screenBounds.getHeight() - root.prefHeight(286)) / 2);
+            stage.setX((Main.stage.getX() + Main.stage.getWidth() / 2d) - root.prefWidth(545) / 2d);
+            stage.setY((Main.stage.getY() + Main.stage.getHeight() / 2d) - root.prefHeight(286) / 2d);
+            
+            //stage.setX((Main.stage.getWidth() - root.prefWidth(545)) / 2);
+            //stage.setY((Main.stage.getHeight() - root.prefHeight(286)) / 2);
+            
+            root.setOnMousePressed(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    settingsXOffset = event.getSceneX();
+                    settingsYOffset = event.getSceneY();
+                }
+            });
+            
+            root.setOnMouseDragged(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    stage.setX(event.getScreenX() - settingsXOffset);
+                    stage.setY(event.getScreenY() - settingsYOffset);
+                }
+            });
             
             stage.showAndWait();
         } catch (Exception ex) {
@@ -217,5 +245,10 @@ public class LoginController
     public Label getUsernameLabel()
     {
         return lblUsername;
+    }
+    
+    public Label getVersionLabel()
+    {
+        return lblVersion;
     }
 }

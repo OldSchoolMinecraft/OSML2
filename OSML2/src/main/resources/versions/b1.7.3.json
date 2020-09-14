@@ -1,0 +1,15 @@
+{
+	"name": "b1.7.3",
+	"launchArgs": "{username} {accessToken} {uuid} --enable-auth --mojang-auth",
+	"libraries":
+	[
+		"jinput:2.0.5",
+		"lwjgl:2.9.0",
+		"lwjgl_util:2.9.0",
+		"json:20140107",
+		"jackson-core:2.11.0",
+		"jackson-databind:2.11.0",
+		"jackson-annotations:2.11.0"
+	],
+	"client": "minecraft:b.7.3-osm"
+}

@@ -7,16 +7,21 @@ import com.oldschoolminecraft.osml.Configuration;
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.Util;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class SettingsController
 {
     @FXML protected CheckBox chkGameDirectory;
+    
+    @FXML protected ChoiceBox<String> cmbVersion;
+    
     @FXML protected CheckBox chkExecutable;
     @FXML protected CheckBox chkJVMArguments;
     
@@ -43,6 +48,9 @@ public class SettingsController
         txtGameDirectory.setText(Main.config.gameDirectory);
         txtExecutable.setText(Main.config.javaExecutable);
         txtJVMArguments.setText(Main.config.jvmArguments);
+        
+        cmbVersion.setValue("b1.7.3");
+        cmbVersion.setItems(FXCollections.observableArrayList("b1.7.3"));
     }
     
     @FXML protected void handleOpenGameDir(ActionEvent event)
@@ -83,6 +91,9 @@ public class SettingsController
             config.jvmArguments = txtJVMArguments.getText();
         else
             config.jvmArguments = Configuration.defaultConfig.jvmArguments;
+        
+        Main.config = config;
+        Main.saveConfig();
         
         ((Stage)saveButton.getScene().getWindow()).close();
     }
