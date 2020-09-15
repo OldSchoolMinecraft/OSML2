@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.MojangAPI;
 import com.oldschoolminecraft.osml.ui.LoginController;
-import com.oldschoolminecraft.osml.ui.UpdateController;
+import com.oldschoolminecraft.osml.update.ClientUpdater;
 import com.oldschoolminecraft.osml.util.Configuration;
 import com.oldschoolminecraft.osml.util.JSONWebResponse;
 import com.oldschoolminecraft.osml.util.Util;
@@ -31,15 +31,20 @@ import javafx.stage.StageStyle;
 @SuppressWarnings("all")
 public class Main extends Application
 {
+    public static Main instance;
+    
     public static String CURRENT_VERSION = "1.0.0";
     
-    public static boolean loggedIn = false;
+    public static boolean loggedIn = false, debug = false;
     public static AuthFile authDataFile;
     public static Configuration config;
     
-    public static File workingDirectory = Util.getWorkingDirectory();
-    public static File authFile = new File(workingDirectory, "auth.json");
-    public static File configFile = new File(workingDirectory, "config.json");
+    public static File workingDirectory;
+    public static File authFile;
+    public static File configFile;
+    public static File versionsDir;
+    public static File tmpDir;
+    public static File librariesDir;
     
     public static Stage stage;
     public static LoginController loginController;
@@ -51,6 +56,13 @@ public class Main extends Application
     
     public static void main(String[] args)
     {
+        for (String arg : args)
+            if (arg.equalsIgnoreCase("--ide"))
+                debug = true;
+        
+        if (debug)
+            System.out.println("Running in IDE mode. Self updater will be disabled.");
+        
         launch(args);
     }
     
@@ -59,12 +71,38 @@ public class Main extends Application
     {
         try
         {
+            instance = this;
+            
             Main.stage = stage;
             
             // remove windows border
             stage.initStyle(StageStyle.UNDECORATED);
             
             ObjectMapper mapper = new ObjectMapper();
+            
+            configFile = new File(Util.getWorkingDirectory(), "config.json");
+            authFile = new File(Util.getWorkingDirectory(), "auth.json");
+            
+            if (configFile.exists())
+            {
+                config = mapper.readValue(configFile, Configuration.class);
+            } else {
+                config = Configuration.defaultConfig;
+                mapper.writeValue(configFile, config);
+            }
+            
+            // init directories
+            workingDirectory = new File(config.gameDirectory);
+            versionsDir = new File(workingDirectory, "versions");
+            tmpDir = new File(workingDirectory, "tmp");
+            librariesDir = new File(workingDirectory, "libraries");
+            
+            if (!versionsDir.exists() || !versionsDir.isDirectory())
+                versionsDir.mkdir();
+            if (!tmpDir.exists() || !tmpDir.isDirectory())
+                tmpDir.mkdir();
+            if (!librariesDir.exists() || !librariesDir.isDirectory())
+                librariesDir.mkdir();
             
             if (authFile.exists())
             {
@@ -77,14 +115,6 @@ public class Main extends Application
                     authFile.delete();
                 } else
                     loggedIn = true;
-            }
-            
-            if (configFile.exists())
-            {
-                config = mapper.readValue(configFile, Configuration.class);
-            } else {
-                config = Configuration.defaultConfig;
-                mapper.writeValue(configFile, config);
             }
             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LoginUI.fxml"));
@@ -129,6 +159,9 @@ public class Main extends Application
             loginController.getVersionLabel().setText("v" + CURRENT_VERSION);
             
             setLoggedIn(loggedIn);
+            
+            //TODO: remove
+            new ClientUpdater().start();
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(1);

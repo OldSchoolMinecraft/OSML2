@@ -74,6 +74,8 @@ public class SettingsController
             
             if (gameDir.exists() && gameDir.isDirectory())
                 config.gameDirectory = gameDirVal;
+            else
+                config.gameDirectory = Configuration.defaultConfig.gameDirectory;
         } else
             config.gameDirectory = Configuration.defaultConfig.gameDirectory;
         
