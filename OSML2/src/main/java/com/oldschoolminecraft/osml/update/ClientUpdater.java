@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.ui.UpdateController;
+import com.oldschoolminecraft.osml.util.UpdateEvent;
+import com.oldschoolminecraft.osml.util.Util;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -23,7 +25,15 @@ public class ClientUpdater extends Thread
     public double xOffset, yOffset;
     
     private long totalDownloadSize = 0, downloadedSize = 0;
+    private ArrayList<Download> metaDownloads = new ArrayList<Download>();
     private ArrayList<Download> downloads = new ArrayList<Download>();
+    
+    public UpdateEvent event;
+    
+    public ClientUpdater(UpdateEvent event)
+    {
+        this.event = event;
+    }
     
     public void run()
     {
@@ -36,19 +46,63 @@ public class ClientUpdater extends Thread
             for (String input : version.libraries)
             {
                 Library lib = new Library(input);
-                downloads.add(new Download(lib));
+                Download dl = new Download(lib);
+                dl.getMeta();
+                metaDownloads.add(dl);
             }
             
-            downloads.add(new Download(new Library(version.client)));
+            Download clientDL = new Download(new Library(version.client));
+            clientDL.getMeta();
+            metaDownloads.add(clientDL);
+            
+            Platform.runLater(() ->
+            {
+                int totalMetaDownloads = metaDownloads.size();
+                int completedMetaDownloads = 0;
+                for (Download dl : metaDownloads)
+                {
+                    try
+                    {
+                        completedMetaDownloads++;
+                        int currentProgress = (completedMetaDownloads / totalMetaDownloads) * 100;
+                        controller.getProgressBar().setProgress(currentProgress);
+                        
+                        File file = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", dl.getLibrary().getName(), dl.getLibrary().getVersion(), dl.getLibrary().getName(), dl.getLibrary().getVersion()));
+                        if (file.exists())
+                        {
+                            String diskHash = Util.sha256File(file.getAbsolutePath());
+                            String metaHash = dl.getFileHash();
+                            if (diskHash.equals(metaHash))
+                            {
+                                controller.getCurrentFileLabel().setText(String.format("%s-%s skipped (%s%% checked)", dl.getLibrary().getName(), dl.getLibrary().getVersion(), currentProgress * 100));
+                                controller.getCurrentFileLabel().setVisible(true);
+                                continue;
+                            } else {
+                                file.delete();
+                                downloads.add(dl);
+                                totalDownloadSize += dl.getFileSize();
+                            }
+                        } else {
+                            downloads.add(dl);
+                            totalDownloadSize += dl.getFileSize();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+            
+            if (downloads.size() < 1)
+            {
+                controller.close();
+                event.onComplete();
+                return;
+            }
             
             for (Download dl : downloads)
             {
                 dl.connect();
-                totalDownloadSize += dl.getContentLength();
-            }
-            
-            for (Download dl : downloads)
-            {
+                
                 Platform.runLater(() ->
                 {
                     try
@@ -73,7 +127,8 @@ public class ClientUpdater extends Thread
                             
                             try
                             {
-                                controller.getCurrentFileLabel().setText(String.format("%s %s%% (%s%% total)", dl.getLibrary().getName(), (currentFileDownloadedSize / currentFileTotalSize) * 100, (downloadedSize / totalDownloadSize) * 100));
+                                controller.getCurrentFileLabel().setText(String.format("%s-%s %s%% (%s%% downloaded)", dl.getLibrary().getName(), dl.getLibrary().getVersion(), (currentFileDownloadedSize / currentFileTotalSize) * 100, (downloadedSize / totalDownloadSize) * 100));
+                                controller.getCurrentFileLabel().setVisible(true);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -91,7 +146,6 @@ public class ClientUpdater extends Thread
             
             controller.getOKButton().setOnAction((event) ->
             {
-                //TODO: copy files from tmp to proper location
                 ((Stage)controller.getOKButton().getScene().getWindow()).close();
             });
             

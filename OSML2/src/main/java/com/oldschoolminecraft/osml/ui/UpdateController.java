@@ -1,5 +1,8 @@
 package com.oldschoolminecraft.osml.ui;
 
+import com.oldschoolminecraft.osml.Main;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,16 +15,19 @@ public class UpdateController
     @FXML protected ProgressBar progressBar;
     @FXML protected Label lblCurrentFile;
     @FXML protected Button btnOK;
-    @FXML protected Button btnCancel;
     
     @FXML protected void okAction(ActionEvent event)
     {
-        //
+        Main.clientUpdater.event.onComplete();
+        close();
     }
     
-    @FXML protected void cancelAction(ActionEvent event)
+    public void close()
     {
-        ((Stage)btnOK.getScene().getWindow()).close();
+        Platform.runLater(() ->
+        {
+            ((Stage)btnOK.getScene().getWindow()).close();
+        });
     }
     
     public ProgressBar getProgressBar()
@@ -37,10 +43,5 @@ public class UpdateController
     public Button getOKButton()
     {
         return btnOK;
-    }
-    
-    public Button getCancelButton()
-    {
-        return btnCancel;
     }
 }

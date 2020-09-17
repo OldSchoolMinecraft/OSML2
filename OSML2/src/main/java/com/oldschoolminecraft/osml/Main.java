@@ -38,6 +38,7 @@ public class Main extends Application
     public static boolean loggedIn = false, debug = false;
     public static AuthFile authDataFile;
     public static Configuration config;
+    public static ClientUpdater clientUpdater;
     
     public static File workingDirectory;
     public static File authFile;
@@ -159,9 +160,6 @@ public class Main extends Application
             loginController.getVersionLabel().setText("v" + CURRENT_VERSION);
             
             setLoggedIn(loggedIn);
-            
-            //TODO: remove
-            new ClientUpdater().start();
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(1);

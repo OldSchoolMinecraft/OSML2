@@ -4,15 +4,31 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.json.JSONObject;
+
+import com.oldschoolminecraft.osml.util.Util;
+
 public class Download
 {
     private Library lib;
     private HttpsURLConnection connection;
     private long contentLength;
+    private long file_size;
+    private String file_hash;
     
     public Download(Library lib)
     {
         this.lib = lib;
+    }
+    
+    public void getMeta() throws Exception
+    {
+        JSONObject res = new JSONObject(Util.get(String.format("https://www.oldschoolminecraft.com/client_lib?name=%s&version=%s&meta", lib.getName(), lib.getVersion())));
+        if (res.has("file_size") && res.has("file_hash") && !res.has("error"))
+        {
+            file_size = res.getLong("file_size");
+            file_hash = res.getString("file_hash");
+        }
     }
     
     public void connect() throws Exception
@@ -35,5 +51,15 @@ public class Download
     public long getContentLength()
     {
         return contentLength;
+    }
+    
+    public long getFileSize()
+    {
+        return file_size;
+    }
+    
+    public String getFileHash()
+    {
+        return file_hash;
     }
 }

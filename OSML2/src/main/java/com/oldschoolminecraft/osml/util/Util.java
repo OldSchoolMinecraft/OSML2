@@ -1,14 +1,18 @@
 package com.oldschoolminecraft.osml.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -169,5 +173,18 @@ public class Util
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public static String sha256File(String file) throws Exception
+    {
+        byte[] buffer= new byte[8192];
+        int count;
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        while ((count = bis.read(buffer)) > 0)
+            md.update(buffer, 0, count);
+        bis.close();
+        BigInteger hash = new BigInteger(1, md.digest());
+        return hash.toString(16);
     }
 }

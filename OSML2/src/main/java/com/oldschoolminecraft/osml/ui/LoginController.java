@@ -7,13 +7,13 @@ import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.MojangAPI;
 import com.oldschoolminecraft.osml.launch.Launcher;
+import com.oldschoolminecraft.osml.update.ClientUpdater;
 import com.oldschoolminecraft.osml.util.JSONWebResponse;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -100,7 +100,7 @@ public class LoginController
                 alert.showAndWait();
             }
         } else {
-            new Launcher().launch();
+            new ClientUpdater(() -> new Launcher().launch()).start();
         }
     }
     
