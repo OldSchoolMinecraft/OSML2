@@ -23,7 +23,7 @@ public class Download
     
     public void getMeta() throws Exception
     {
-        JSONObject res = new JSONObject(Util.get(String.format("https://www.oldschoolminecraft.com/client_lib?name=%s&version=%s&meta", lib.getName(), lib.getVersion())));
+        JSONObject res = new JSONObject(Util.get(String.format("https://www.oldschoolminecraft.com/client_lib?name=%s&version=%s&meta", lib.name, lib.version)));
         if (res.has("file_size") && res.has("file_hash") && !res.has("error"))
         {
             file_size = res.getLong("file_size");
@@ -33,7 +33,7 @@ public class Download
     
     public void connect() throws Exception
     {
-        connection = (HttpsURLConnection) new URL(String.format("https://www.oldschoolminecraft.com/client_lib?name=%s&version=%s", lib.getName(), lib.getVersion())).openConnection();
+        connection = (HttpsURLConnection) new URL(String.format("https://www.oldschoolminecraft.com/client_lib?name=%s&version=%s", lib.name, lib.version)).openConnection();
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
         contentLength = connection.getContentLengthLong();
     }

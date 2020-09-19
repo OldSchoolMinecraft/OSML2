@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.ui.UpdateController;
+import com.oldschoolminecraft.osml.util.OS;
 import com.oldschoolminecraft.osml.util.UpdateEvent;
 import com.oldschoolminecraft.osml.util.Util;
 
@@ -55,6 +56,26 @@ public class ClientUpdater extends Thread
             clientDL.getMeta();
             metaDownloads.add(clientDL);
             
+            String nativesInput = version.natives.windows;
+            switch (OS.getOS())
+            {
+                default:
+                    nativesInput = version.natives.windows;
+                    break;
+                case Windows:
+                    nativesInput = version.natives.windows;
+                    break;
+                case Linux:
+                    nativesInput = version.natives.linux;
+                    break;
+                case Mac:
+                    nativesInput = version.natives.osx;
+                    break;
+            }
+            Download nativesDL = new Download(new Library(nativesInput));
+            nativesDL.getMeta();
+            metaDownloads.add(nativesDL);
+            
             Platform.runLater(() ->
             {
                 int totalMetaDownloads = metaDownloads.size();
@@ -67,22 +88,28 @@ public class ClientUpdater extends Thread
                         int currentProgress = (completedMetaDownloads / totalMetaDownloads) * 100;
                         controller.getProgressBar().setProgress(currentProgress);
                         
-                        File file = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", dl.getLibrary().getName(), dl.getLibrary().getVersion(), dl.getLibrary().getName(), dl.getLibrary().getVersion()));
+                        File file = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", dl.getLibrary().name, dl.getLibrary().version, dl.getLibrary().name, dl.getLibrary().version));
+                        file.getParentFile().mkdirs();
                         if (file.exists())
                         {
                             String diskHash = Util.sha256File(file.getAbsolutePath());
                             String metaHash = dl.getFileHash();
                             if (diskHash.equals(metaHash))
                             {
-                                controller.getCurrentFileLabel().setText(String.format("%s-%s skipped (%s%% checked)", dl.getLibrary().getName(), dl.getLibrary().getVersion(), currentProgress * 100));
+                                System.out.println(String.format("Skipping library: %s-%s", dl.getLibrary().name, dl.getLibrary().version));
+                                controller.getCurrentFileLabel().setText(String.format("%s-%s skipped (%s%% checked)", dl.getLibrary().name, dl.getLibrary().version, currentProgress * 100));
                                 controller.getCurrentFileLabel().setVisible(true);
                                 continue;
                             } else {
+                                System.out.println(String.format("Library %s-%s already exists, but will be updated.", dl.getLibrary().name, dl.getLibrary().version));
+                                
                                 file.delete();
                                 downloads.add(dl);
                                 totalDownloadSize += dl.getFileSize();
                             }
                         } else {
+                            System.out.println(String.format("Download requested for library: %s-%s", dl.getLibrary().name, dl.getLibrary().version));
+                            
                             downloads.add(dl);
                             totalDownloadSize += dl.getFileSize();
                         }
@@ -90,25 +117,26 @@ public class ClientUpdater extends Thread
                         ex.printStackTrace();
                     }
                 }
-            });
-            
-            if (downloads.size() < 1)
-            {
-                controller.close();
-                event.onComplete();
-                return;
-            }
-            
-            for (Download dl : downloads)
-            {
-                dl.connect();
                 
-                Platform.runLater(() ->
+                if (downloads.size() < 1)
+                {
+                    System.out.println("Download queue is empty");
+                    
+                    controller.close();
+                    event.onComplete();
+                    return;
+                }
+                
+                for (Download dl : downloads)
                 {
                     try
                     {
+                        System.out.println(String.format("Downloading %s-%s", dl.getLibrary().name, dl.getLibrary().version));
+                    
+                        dl.connect();
+                    
                         InputStream in = dl.getConnection().getInputStream();
-                        File file = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", dl.getLibrary().getName(), dl.getLibrary().getVersion(), dl.getLibrary().getName(), dl.getLibrary().getVersion()));
+                        File file = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", dl.getLibrary().name, dl.getLibrary().version, dl.getLibrary().name, dl.getLibrary().version));
                         file.getParentFile().mkdirs();
                         FileOutputStream fout = new FileOutputStream(file);
                         
@@ -127,7 +155,7 @@ public class ClientUpdater extends Thread
                             
                             try
                             {
-                                controller.getCurrentFileLabel().setText(String.format("%s-%s %s%% (%s%% downloaded)", dl.getLibrary().getName(), dl.getLibrary().getVersion(), (currentFileDownloadedSize / currentFileTotalSize) * 100, (downloadedSize / totalDownloadSize) * 100));
+                                controller.getCurrentFileLabel().setText(String.format("%s-%s %s%% (%s%% downloaded)", dl.getLibrary().name, dl.getLibrary().version, (currentFileDownloadedSize / currentFileTotalSize) * 100, (downloadedSize / totalDownloadSize) * 100));
                                 controller.getCurrentFileLabel().setVisible(true);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -141,15 +169,15 @@ public class ClientUpdater extends Thread
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
+                }
+                
+                controller.getOKButton().setOnAction((event) ->
+                {
+                    ((Stage)controller.getOKButton().getScene().getWindow()).close();
                 });
-            }
-            
-            controller.getOKButton().setOnAction((event) ->
-            {
-                ((Stage)controller.getOKButton().getScene().getWindow()).close();
+                
+                controller.getOKButton().setDisable(false);
             });
-            
-            controller.getOKButton().setDisable(false);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -6,4 +6,5 @@ public class VersionManifest
     public String launchArgs;
     public String[] libraries;
     public String client;
+    public ClientNatives natives;
 }
