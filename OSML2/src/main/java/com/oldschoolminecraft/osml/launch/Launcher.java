@@ -2,6 +2,7 @@ package com.oldschoolminecraft.osml.launch;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.update.Library;
@@ -37,7 +38,11 @@ public class Launcher
             libsb.append(clientFile.getAbsolutePath());
             
             ArrayList<String> launchArguments = new ArrayList<String>();
+            
             launchArguments.add(Main.config.javaExecutable);
+            String[] jvm = Main.config.jvmArguments.split(" ");
+            for (String arg : jvm)
+                launchArguments.add(arg);
             
             String nativesInput = manifest.natives.windows;
             switch (OS.getOS())
@@ -63,19 +68,15 @@ public class Launcher
             if (!nativesDir.exists())
                 nativesDir.mkdir();
             
-            if (nativesFile.exists())
+            /*if (nativesFile.exists())
                 ZipUtil.unzip(nativesFile.getAbsolutePath(), nativesDir.getAbsolutePath());
             else
-                System.out.println("Natives file doesn't exist");
+                System.out.println("Natives file doesn't exist");*/
             
             launchArguments.add("-Djava.library.path=" + nativesDir.getAbsolutePath());
             launchArguments.add("-classpath");
-            launchArguments.add(libsb.toString());
+            launchArguments.add(libsb.toString().trim());
             launchArguments.add("net.minecraft.client.Minecraft");
-            
-            String[] jvm = Main.config.jvmArguments.split(" ");
-            for (String arg : jvm)
-                launchArguments.add(arg);
             
             String[] launchParameters = manifest.launchArgs.split(" ");
             for (String arg : launchParameters)
@@ -83,13 +84,13 @@ public class Launcher
                 arg = arg.replace("{username}", Main.authDataFile.username);
                 arg = arg.replace("{accessToken}", Main.authDataFile.accessToken);
                 arg = arg.replace("{uuid}", Main.authDataFile.uuid);
-                launchArguments.add(arg);
+                launchArguments.add(arg.trim());
             }
             
             System.out.println("Launch args: " + launchArguments.toString());
             
-            //Thread nativesRemovalHook = new Thread(() -> nativesDir.delete());
-            //Runtime.getRuntime().addShutdownHook(nativesRemovalHook);
+            Thread nativesRemovalHook = new Thread(() -> nativesDir.delete());
+            Runtime.getRuntime().addShutdownHook(nativesRemovalHook);
             
             ProcessBuilder pb = new ProcessBuilder(launchArguments);
             pb.directory(new File(Main.config.gameDirectory));
@@ -107,11 +108,22 @@ public class Launcher
         }
     }
     
+    private String[] libraries =
+    {
+        "jinput.jar",
+        "lwjgl.jar",
+        "lwjgl_util.jar",
+        "json.jar",
+        "core.jar",
+        "databind.jar",
+        "annotations.jar"
+    };
+    
     public void oldLaunch()
     {
         try
         {
-            /*StringBuilder libsb = new StringBuilder();
+            StringBuilder libsb = new StringBuilder();
             for (int i = 0; i < libraries.length; i++)
                 libsb.append(os_library(libraries[i]) + File.pathSeparator);
             libsb.append(os_library("minecraft.jar"));
@@ -133,7 +145,7 @@ public class Launcher
             launchArguments.add("--enable-auth");
             launchArguments.add("--mojang-auth");
             
-            System.out.println(launchArguments.toString());
+            System.out.println("Old launch: " + launchArguments.toString());
             
             ProcessBuilder pb = new ProcessBuilder(launchArguments);
             pb.directory(new File(Main.config.gameDirectory));
@@ -141,7 +153,7 @@ public class Launcher
             pb.start();
             
             //TODO: launcher visibility?
-            System.exit(0);*/
+            System.exit(0);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

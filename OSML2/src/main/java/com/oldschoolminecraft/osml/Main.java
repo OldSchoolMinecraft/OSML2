@@ -217,7 +217,7 @@ public class Main extends Application
             loginController.getSettingsButton().setLayoutY(setY + (24 + 5));
             loginController.getCosmeticsButton().setLayoutY(setY + (24 + 5));
             
-            BackgroundImage myBI = new BackgroundImage(new Image("https://minotar.net/body/" + authDataFile.uuid, 90, 180, false, true), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+            BackgroundImage myBI = new BackgroundImage(new Image(String.format("https://minotar.net/body/%s", authDataFile.uuid), 90, 180, false, true), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
             loginController.getPlayerPreview().setBackground(new Background(myBI));
             loginController.getPlayerPreview().setStyle("-fx-effect: dropshadow(three-pass-box, black, 30, 0.3, 0, 0);");
         } else {

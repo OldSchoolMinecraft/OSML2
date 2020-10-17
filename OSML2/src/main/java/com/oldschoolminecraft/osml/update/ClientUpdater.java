@@ -122,6 +122,7 @@ public class ClientUpdater extends Thread
                 {
                     System.out.println("Download queue is empty");
                     
+                    closeUI();
                     controller.close();
                     event.onComplete();
                     return;
@@ -176,7 +177,10 @@ public class ClientUpdater extends Thread
                     ((Stage)controller.getOKButton().getScene().getWindow()).close();
                 });
                 
-                controller.getOKButton().setDisable(false);
+                //controller.getOKButton().setDisable(false);
+                closeUI();
+                controller.close();
+                event.onComplete();
             });
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -231,5 +235,10 @@ public class ClientUpdater extends Thread
                 ex.printStackTrace();
             }
         });
+    }
+    
+    private void closeUI()
+    {
+        stage.close();
     }
 }

@@ -100,7 +100,11 @@ public class LoginController
                 alert.showAndWait();
             }
         } else {
-            new ClientUpdater(() -> new Launcher().launch()).start();
+            new ClientUpdater(() ->
+            {
+                Main.stage.close();
+                new Launcher().launch();
+            }).start();
         }
     }
     
