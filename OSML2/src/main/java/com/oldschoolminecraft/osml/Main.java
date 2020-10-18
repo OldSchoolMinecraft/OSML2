@@ -81,9 +81,7 @@ public class Main extends Application
             
             ObjectMapper mapper = new ObjectMapper();
             
-            configFile = new File(Util.getWorkingDirectory(), "config.json");
-            authFile = new File(Util.getWorkingDirectory(), "auth.json");
-            
+            configFile = new File("config.json");
             if (configFile.exists())
             {
                 config = mapper.readValue(configFile, Configuration.class);
@@ -98,6 +96,8 @@ public class Main extends Application
             tmpDir = new File(workingDirectory, "tmp");
             librariesDir = new File(workingDirectory, "libraries");
             
+            if (!workingDirectory.exists() || !workingDirectory.isDirectory())
+                workingDirectory.mkdir();
             if (!versionsDir.exists() || !versionsDir.isDirectory())
                 versionsDir.mkdir();
             if (!tmpDir.exists() || !tmpDir.isDirectory())
@@ -105,6 +105,7 @@ public class Main extends Application
             if (!librariesDir.exists() || !librariesDir.isDirectory())
                 librariesDir.mkdir();
             
+            authFile = new File(workingDirectory, "auth.json");
             if (authFile.exists())
             {
                 authDataFile = mapper.readValue(authFile, AuthFile.class);

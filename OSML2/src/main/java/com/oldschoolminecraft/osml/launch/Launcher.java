@@ -68,10 +68,10 @@ public class Launcher
             if (!nativesDir.exists())
                 nativesDir.mkdir();
             
-            /*if (nativesFile.exists())
+            if (nativesFile.exists())
                 ZipUtil.unzip(nativesFile.getAbsolutePath(), nativesDir.getAbsolutePath());
             else
-                System.out.println("Natives file doesn't exist");*/
+                System.out.println("Natives file doesn't exist");
             
             launchArguments.add("-Djava.library.path=" + nativesDir.getAbsolutePath());
             launchArguments.add("-classpath");
