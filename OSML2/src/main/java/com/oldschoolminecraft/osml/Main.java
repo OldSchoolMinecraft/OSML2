@@ -1,7 +1,9 @@
 package com.oldschoolminecraft.osml;
 
 import java.io.File;
+import java.util.UUID;
 
+import com.deadmandungeons.skinutil.MinecraftSkinUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.MojangAPI;
@@ -10,14 +12,17 @@ import com.oldschoolminecraft.osml.update.ClientUpdater;
 import com.oldschoolminecraft.osml.util.Configuration;
 import com.oldschoolminecraft.osml.util.JSONWebResponse;
 import com.oldschoolminecraft.osml.util.Util;
+import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile;
+import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile.Skin;
+import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile.Textures;
 
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -54,6 +59,8 @@ public class Main extends Application
     private double yOffset = 0;
     
     private static double setY;
+    
+    private MinecraftProfile profile;
     
     public static void main(String[] args)
     {
@@ -118,6 +125,9 @@ public class Main extends Application
                 } else
                     loggedIn = true;
             }
+            
+            if (loggedIn)
+                profile = new MinecraftProfile(UUID.fromString(authDataFile.uuid.replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5")), authDataFile.username, new Textures(new Skin(Util.get("https://www.oldschoolminecraft.com/getskin?username=" + authDataFile.username), false), ""));
             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LoginUI.fxml"));
             Parent root = loader.load();
@@ -218,7 +228,7 @@ public class Main extends Application
             loginController.getSettingsButton().setLayoutY(setY + (24 + 5));
             loginController.getCosmeticsButton().setLayoutY(setY + (24 + 5));
             
-            BackgroundImage myBI = new BackgroundImage(new Image(String.format("https://minotar.net/body/%s", authDataFile.uuid), 90, 180, false, true), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+            BackgroundImage myBI = new BackgroundImage(SwingFXUtils.toFXImage(MinecraftSkinUtil.getPlayerSkinFront(instance.profile, 6).getImage(), null), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
             loginController.getPlayerPreview().setBackground(new Background(myBI));
             loginController.getPlayerPreview().setStyle("-fx-effect: dropshadow(three-pass-box, black, 30, 0.3, 0, 0);");
         } else {
