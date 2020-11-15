@@ -1,10 +1,12 @@
 package com.oldschoolminecraft.osml.ui;
 
-import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.auth.AuthFile;
+import com.oldschoolminecraft.osml.auth.HydraAPI;
 import com.oldschoolminecraft.osml.auth.MojangAPI;
 import com.oldschoolminecraft.osml.launch.Launcher;
 import com.oldschoolminecraft.osml.update.ClientUpdater;
@@ -65,16 +67,32 @@ public class LoginController
         {
             String username = txtUsername.getText();
             String password = txtPassword.getText();
-            String clientToken = UUID.randomUUID().toString().replaceAll("-", "");
             
-            JSONWebResponse res = MojangAPI.authenticate(username, password, clientToken);
+            Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
+            Matcher mat = pattern.matcher(username);
+
+            JSONWebResponse res;
+            if(mat.matches())
+                res = HydraAPI.authenticateEmail(username, password);
+            else
+                res = HydraAPI.authenticateUsername(username, password);
+            
             if (res.status == 200)
             {
+                if (res.data.has("error"))
+                {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Oh noes!");
+                    alert.setHeaderText("Something went wrong!");
+                    alert.setContentText("Hydra: " + res.data.getString("error"));
+                    alert.showAndWait();
+                    return;
+                }
+                
                 Main.authDataFile = new AuthFile();
-                Main.authDataFile.uuid = res.data.getJSONObject("selectedProfile").getString("id");
-                Main.authDataFile.username = res.data.getJSONObject("selectedProfile").getString("name");
-                Main.authDataFile.accessToken = res.data.getString("accessToken");
-                Main.authDataFile.clientToken = clientToken;
+                Main.authDataFile.uuid = res.data.getString("uuid");
+                Main.authDataFile.username = res.data.getString("username");
+                Main.authDataFile.accessToken = res.data.getString("token");
                 
                 if (chkRememberAccount.isSelected())
                     Main.saveAuthData();
@@ -96,7 +114,7 @@ public class LoginController
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Oh noes!");
                 alert.setHeaderText("Something went wrong!");
-                alert.setContentText(String.format("Failed to authenticate (%s): " + (res.data.has("errorMessage") ? res.data.getString("errorMessage") : "unknown")));
+                alert.setContentText(String.format("Failed to authenticate (status %s): %s", res.status, (res.data.has("errorMessage") ? res.data.getString("errorMessage") : "unknown")));
                 alert.showAndWait();
             }
         } else {
@@ -110,7 +128,7 @@ public class LoginController
     
     @FXML protected void handleLogoutAction(ActionEvent event)
     {
-        MojangAPI.invalidate(Main.authDataFile.accessToken, Main.authDataFile.clientToken);
+        HydraAPI.invalidate(Main.authDataFile.accessToken);
         Main.authFile.delete();
         Main.setLoggedIn(false);
     }

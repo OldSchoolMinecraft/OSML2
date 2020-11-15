@@ -117,6 +117,7 @@ public class Util
             con.setDoOutput(true);
             con.setDoInput(true);
             con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
             con.setRequestMethod("POST");
 
             OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
@@ -132,6 +133,7 @@ public class Util
             br.close();
             return new JSONWebResponse(status, sb.toString().startsWith("{") ? new JSONObject(sb.toString()) : null);
         } catch (IOException ex) {
+            ex.printStackTrace();
             JSONObject obj = new JSONObject();
             obj.put("error", "Something went wrong: " + ex.getMessage());
             return new JSONWebResponse(0, obj);

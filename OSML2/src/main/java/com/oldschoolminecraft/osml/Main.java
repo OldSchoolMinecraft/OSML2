@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.deadmandungeons.skinutil.MinecraftSkinUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.auth.AuthFile;
-import com.oldschoolminecraft.osml.auth.MojangAPI;
+import com.oldschoolminecraft.osml.auth.HydraAPI;
 import com.oldschoolminecraft.osml.ui.LoginController;
 import com.oldschoolminecraft.osml.update.ClientUpdater;
 import com.oldschoolminecraft.osml.util.Configuration;
@@ -116,8 +116,8 @@ public class Main extends Application
             if (authFile.exists())
             {
                 authDataFile = mapper.readValue(authFile, AuthFile.class);
-                JSONWebResponse res = MojangAPI.validate(authDataFile.accessToken, authDataFile.clientToken);
-                if (res.status != 204)
+                JSONWebResponse res = HydraAPI.validate(authDataFile.uuid, authDataFile.accessToken);
+                if (res.status != 200)
                 {
                     loggedIn = false;
                     System.out.println("Auto login failed: " + (res.data.has("error") ? res.data.getString("error") : "reason unknown"));
@@ -127,7 +127,7 @@ public class Main extends Application
             }
             
             if (loggedIn)
-                profile = new MinecraftProfile(UUID.fromString(authDataFile.uuid.replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5")), authDataFile.username, new Textures(new Skin(Util.get("https://www.oldschoolminecraft.com/getskin?username=" + authDataFile.username), false), ""));
+                profile = new MinecraftProfile(UUID.fromString(authDataFile.uuid), authDataFile.username, new Textures(new Skin(Util.get("https://www.oldschoolminecraft.com/getskin?username=" + authDataFile.username), false), ""));
             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LoginUI.fxml"));
             Parent root = loader.load();
