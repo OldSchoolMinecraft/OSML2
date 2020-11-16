@@ -2,6 +2,7 @@ package com.oldschoolminecraft.osml.ui;
 
 import com.deadmandungeons.skinutil.MinecraftSkinUtil;
 import com.oldschoolminecraft.osml.Main;
+import com.oldschoolminecraft.osml.auth.HydraAPI;
 import com.oldschoolminecraft.osml.launch.Launcher;
 import com.oldschoolminecraft.osml.update.ClientUpdater;
 
@@ -51,14 +52,87 @@ public class LauncherController
         new ClientUpdater(() ->  new Launcher().launch()).start();
     }
     
+    private double loginXOffset, loginYOffset;
     @FXML protected void onLogoutAction(ActionEvent event)
     {
-        //
+        try
+        {
+            HydraAPI.invalidate(Main.authDataFile.accessToken);
+            Main.authFile.delete();
+            
+            Stage stage = new Stage();
+            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LoginUI.fxml"));
+            Parent root = loader.load();
+            Main.loginController = loader.getController();
+            
+            Scene scene = new Scene(root, 350, 400);
+            
+            stage.setTitle(Main.loggedIn ? "Old School Minecraft" : "Login");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((screenBounds.getWidth() - root.prefWidth(350)) / 2);
+            stage.setY((screenBounds.getHeight() - root.prefHeight(400)) / 2);
+            
+            root.setOnMousePressed(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    loginXOffset = event.getSceneX();
+                    loginYOffset = event.getSceneY();
+                }
+            });
+            
+            root.setOnMouseDragged(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    stage.setX(event.getScreenX() - loginXOffset);
+                    stage.setY(event.getScreenY() - loginYOffset);
+                }
+            });
+            
+            ((Stage) btnPlay.getScene().getWindow()).close();
+            
+            stage.show();
+            
+            Main.loginStage = stage;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
     @FXML protected void onCosmeticsAction(ActionEvent event)
     {
-        //
+        try
+        {
+            Stage stage = new Stage();
+            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/CosmeticsUI.fxml"));
+            Parent root = loader.load();
+            
+            Scene scene = new Scene(root, 178, 160);
+            
+            stage.setTitle("Cosmetics");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            
+            stage.initOwner(Main.loginStage);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((screenBounds.getWidth() - root.prefWidth(178)) / 2);
+            stage.setY((screenBounds.getHeight() - root.prefHeight(160)) / 2);
+            
+            stage.showAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
     @FXML protected void onModsAction(ActionEvent event)
@@ -109,9 +183,53 @@ public class LauncherController
         }
     }
     
+    private double settingsXOffset, settingsYOffset;
     @FXML protected void onSettingsAction(ActionEvent event)
     {
-        //
+        try
+        {
+            Stage stage = new Stage();
+            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/SettingsUI.fxml"));
+            Parent root = loader.load();
+            
+            Scene scene = new Scene(root, 545, 286);
+            
+            stage.setTitle("Settings");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            
+            stage.initOwner(Main.loginStage);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            
+            stage.setX((Main.loginStage.getX() + Main.loginStage.getWidth() / 2d) - root.prefWidth(545) / 2d);
+            stage.setY((Main.loginStage.getY() + Main.loginStage.getHeight() / 2d) - root.prefHeight(286) / 2d);
+            
+            root.setOnMousePressed(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    settingsXOffset = event.getSceneX();
+                    settingsYOffset = event.getSceneY();
+                }
+            });
+            
+            root.setOnMouseDragged(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    stage.setX(event.getScreenX() - settingsXOffset);
+                    stage.setY(event.getScreenY() - settingsYOffset);
+                }
+            });
+            
+            stage.showAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
     @FXML protected void onCloseAction(ActionEvent event)

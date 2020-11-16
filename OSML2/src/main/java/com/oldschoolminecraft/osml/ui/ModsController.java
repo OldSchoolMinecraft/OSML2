@@ -2,8 +2,10 @@ package com.oldschoolminecraft.osml.ui;
 
 import java.io.File;
 
+import com.oldschoolminecraft.osml.Main;
+import com.oldschoolminecraft.osml.mods.Mod;
+
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -21,7 +23,8 @@ public class ModsController
     
     @FXML protected void initialize()
     {
-        //TODO: load mods list
+        for (Mod mod : Main.instance.modManager.mods)
+            lstMods.getItems().add(mod.getName());
     }
     
     @FXML protected void onAddModAction(ActionEvent event)
@@ -50,19 +53,13 @@ public class ModsController
         if (!lstMods.getSelectionModel().isEmpty())
         {
             for (String mod : lstMods.getSelectionModel().getSelectedItems())
-            {
-                //TODO: remove mod
-            }
+                Main.instance.modManager.removeMod(mod);
         }
     }
     
     @FXML protected void onCloseAction()
     {
+        Main.instance.modManager.save(new File(Main.modsDir, "manifest.json"));
         ((Stage) btnClose.getScene().getWindow()).close();
-    }
-    
-    @FXML protected void onUpdateAction(Event event)
-    {
-        
     }
 }

@@ -27,7 +27,7 @@ public class Util
             HttpsURLConnection httpClient = (HttpsURLConnection) new URL(url).openConnection();
             httpClient.setRequestMethod("GET");
             httpClient.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101 Firefox/79.0");
-            
+
             try (BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream())))
             {
                 StringBuilder response = new StringBuilder();
@@ -41,17 +41,17 @@ public class Util
             return "";
         }
     }
-    
+
     public static File getNativesPath()
     {
         return new File(getBinDirectory(), "natives");
     }
-    
+
     public static File getBinDirectory()
     {
         return new File(getLauncherDirectory(), "bin");
     }
-    
+
     public static File getLauncherDirectory()
     {
         switch (OS.getOS())
@@ -70,22 +70,22 @@ public class Util
                 return new File(getLinuxHomeDirectory() + "/.osml/");
         }
     }
-    
+
     public static File getJavaExecutable()
     {
         return new File(getJavaBin(), "java.exe");
     }
-    
+
     public static File getJavaBin()
     {
         return new File(getJavaHome(), "bin");
     }
-    
+
     public static File getJavaHome()
     {
         return new File(System.getenv("JAVA_HOME") == null ? "./jre" : System.getenv("JAVA_HOME"));
     }
-    
+
     public static String getLinuxHomeDirectory()
     {
         // $HOME environment variable should exist, but handle the situation when
@@ -101,12 +101,12 @@ public class Util
         } else
             return linux_home;
     }
-    
+
     private static String backslashes(String input)
     {
         return input.replaceAll("/", "\\\\");
     }
-    
+
     public static JSONWebResponse postJSON(String url, JSONObject payload)
     {
         try
@@ -139,7 +139,7 @@ public class Util
             return new JSONWebResponse(0, obj);
         }
     }
-    
+
     public static void downloadFile(String url, String path, boolean deleteIfExists)
     {
         try
@@ -147,26 +147,26 @@ public class Util
             File targetFile = new File(path);
             if (targetFile.exists() && deleteIfExists)
                 targetFile.delete();
-            
+
             URL fileURL = new URL(url);
             HttpURLConnection httpConn = (HttpURLConnection) fileURL.openConnection();
             httpConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
             int responseCode = httpConn.getResponseCode();
-     
+
             if (responseCode == HttpURLConnection.HTTP_OK)
             {
                 InputStream inputStream = httpConn.getInputStream();
                 String saveFilePath = path;
                 FileOutputStream outputStream = new FileOutputStream(saveFilePath);
-     
+
                 int bytesRead = -1;
                 byte[] buffer = new byte[4096];
                 while ((bytesRead = inputStream.read(buffer)) != -1)
                     outputStream.write(buffer, 0, bytesRead);
-     
+
                 outputStream.close();
                 inputStream.close();
-                
+
                 System.out.println(String.format("Downloaded file '%s' to '%s'", url, path));
             } else {
                 System.out.println(String.format("Download failed ('%s'): HTTP code was '%s'", url, responseCode));
@@ -176,10 +176,10 @@ public class Util
             ex.printStackTrace();
         }
     }
-    
+
     public static String sha256File(String file) throws Exception
     {
-        byte[] buffer= new byte[8192];
+        byte[] buffer = new byte[8192];
         int count;
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
@@ -188,5 +188,13 @@ public class Util
         bis.close();
         BigInteger hash = new BigInteger(1, md.digest());
         return hash.toString(16);
+    }
+
+    public static String replaceLast(String string, String substring, String replacement)
+    {
+        int index = string.lastIndexOf(substring);
+        if (index == -1)
+            return string;
+        return string.substring(0, index) + replacement + string.substring(index + substring.length());
     }
 }

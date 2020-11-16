@@ -2,9 +2,9 @@ package com.oldschoolminecraft.osml.launch;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Random;
 
 import com.oldschoolminecraft.osml.Main;
+import com.oldschoolminecraft.osml.mods.Mod;
 import com.oldschoolminecraft.osml.update.Library;
 import com.oldschoolminecraft.osml.update.VersionManager;
 import com.oldschoolminecraft.osml.update.VersionManifest;
@@ -36,6 +36,10 @@ public class Launcher
             Library client = new Library(manifest.client);
             File clientFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", client.name, client.version, client.name, client.version));
             libsb.append(clientFile.getAbsolutePath());
+            
+            if (!Main.instance.modManager.mods.isEmpty())
+                for (Mod mod : Main.instance.modManager.mods)
+                    libsb.append(mod.getPath() + File.pathSeparator);
             
             ArrayList<String> launchArguments = new ArrayList<String>();
             
@@ -75,7 +79,7 @@ public class Launcher
             
             launchArguments.add("-Djava.library.path=" + nativesDir.getAbsolutePath());
             launchArguments.add("-classpath");
-            launchArguments.add(libsb.toString().trim());
+            launchArguments.add(Util.replaceLast(libsb.toString().trim(), File.pathSeparator, ""));
             launchArguments.add("net.minecraft.client.Minecraft");
             
             String[] launchParameters = manifest.launchArgs.split(" ");

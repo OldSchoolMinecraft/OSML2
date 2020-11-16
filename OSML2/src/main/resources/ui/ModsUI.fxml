@@ -9,7 +9,7 @@
    <children>
       <ListView fx:id="lstMods" layoutX="8.0" layoutY="9.0" prefHeight="447.0" prefWidth="386.0" />
       <Button fx:id="btnAddMod" layoutX="8.0" layoutY="466.0" mnemonicParsing="false" onAction="#onAddModAction" prefHeight="25.0" prefWidth="79.0" text="Add Mod" />
-      <Button fx:id="btnRemoveMod" disable="true" layoutX="95.0" layoutY="466.0" mnemonicParsing="false" onAction="#onRemoveModAction" text="Remove Mod" />
+      <Button fx:id="btnRemoveMod" layoutX="95.0" layoutY="466.0" mnemonicParsing="false" onAction="#onRemoveModAction" text="Remove Mod" />
       <Button fx:id="btnClose" layoutX="349.0" layoutY="466.0" mnemonicParsing="false" onAction="#onCloseAction" prefHeight="25.0" prefWidth="45.0" text="Close" />
    </children>
 </Pane>
