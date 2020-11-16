@@ -1,0 +1,6 @@
+#logoPane {
+	-fx-background-image: url("assets/logo.png");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center center;
+    -fx-effect: dropshadow(three-pass-box, black, 30, 0.2, 0, 0);
+}

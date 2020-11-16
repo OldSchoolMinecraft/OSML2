@@ -1,5 +1,6 @@
 package com.oldschoolminecraft.osml.util;
 
+import java.awt.Desktop;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.security.MessageDigest;
 
@@ -20,6 +22,22 @@ import org.json.JSONObject;
 
 public class Util
 {
+    /*
+     * Thank you JuliusVan for the most retarded term known to man (netpage).
+     */
+    public static void openNetpage(String url)
+    {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
+        {
+            try
+            {
+                Desktop.getDesktop().browse(new URI(url));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
     public static String get(String url)
     {
         try
@@ -68,6 +86,25 @@ public class Util
             case Unsupported:
                 System.out.println("Unsupported operating system (assuming Linux).");
                 return new File(getLinuxHomeDirectory() + "/.osml/");
+        }
+    }
+    
+    public static File getGameDirectory()
+    {
+        switch (OS.getOS())
+        {
+            default:
+                System.out.println("Unknown operating system (assuming Windows).");
+                return new File(backslashes(System.getProperty("user.home") + "/AppData/Roaming/.osm/"));
+            case Windows:
+                return new File(backslashes(System.getProperty("user.home") + "/AppData/Roaming/.osm/"));
+            case Mac:
+                return new File("~/Library/Application Support/osm/");
+            case Linux:
+                return new File(getLinuxHomeDirectory() + "/.osm/");
+            case Unsupported:
+                System.out.println("Unsupported operating system (assuming Linux).");
+                return new File(getLinuxHomeDirectory() + "/.osm/");
         }
     }
 

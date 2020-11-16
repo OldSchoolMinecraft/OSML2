@@ -53,6 +53,7 @@ public class Main extends Application
     public static File tmpDir;
     public static File librariesDir;
     public static File modsDir;
+    public static File modsManifestFile;
     
     public static Stage loginStage;
     public static LoginController loginController;
@@ -97,6 +98,7 @@ public class Main extends Application
             {
                 config = mapper.readValue(configFile, Configuration.class);
             } else {
+                configFile.getParentFile().mkdirs();
                 config = Configuration.defaultConfig;
                 mapper.writeValue(configFile, config);
             }
@@ -107,6 +109,7 @@ public class Main extends Application
             tmpDir = new File(workingDirectory, "tmp");
             librariesDir = new File(workingDirectory, "libraries");
             modsDir = new File(workingDirectory, "jarmods");
+            modsManifestFile = new File(modsDir, "manifest.json");
             
             if (!workingDirectory.exists() || !workingDirectory.isDirectory())
                 workingDirectory.mkdir();
@@ -139,8 +142,6 @@ public class Main extends Application
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LoginUI.fxml"));
             Parent root = loader.load();
             loginController = loader.getController();
-            
-            setY = loginController.getSettingsButton().getLayoutY();
             
             Scene scene = new Scene(root, 350, 400);
             
@@ -176,7 +177,7 @@ public class Main extends Application
             loginController.getVersionLabel().setText("v" + CURRENT_VERSION);
             
             modManager = new ModManager();
-            modManager.load(new File(modsDir, "manifest.json"));
+            modManager.load(modsManifestFile);
             
             if (loggedIn)
                 loginImmediately();

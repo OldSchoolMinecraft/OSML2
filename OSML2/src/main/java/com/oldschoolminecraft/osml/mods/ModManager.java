@@ -35,10 +35,15 @@ public class ModManager
     {
         try
         {
-            ObjectMapper mapper = new ObjectMapper();
-            ModsManifest manifest = mapper.readValue(src, ModsManifest.class);
-            for (String path : manifest.mods)
-                mods.add(new Mod(path, new File(path).getName()));
+            if (src.exists())
+            {
+                ObjectMapper mapper = new ObjectMapper();
+                ModsManifest manifest = mapper.readValue(src, ModsManifest.class);
+                for (String path : manifest.mods)
+                    mods.add(new Mod(path, new File(path).getName()));
+            } else {
+                save(src);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

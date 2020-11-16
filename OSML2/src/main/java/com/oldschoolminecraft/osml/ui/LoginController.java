@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.HydraAPI;
-import com.oldschoolminecraft.osml.auth.MojangAPI;
 import com.oldschoolminecraft.osml.launch.Launcher;
 import com.oldschoolminecraft.osml.update.ClientUpdater;
 import com.oldschoolminecraft.osml.util.JSONWebResponse;
+import com.oldschoolminecraft.osml.util.Util;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,6 +23,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -54,6 +55,8 @@ public class LoginController
     @FXML protected CheckBox chkRememberAccount;
     
     @FXML protected Label lblUsername;
+    
+    @FXML protected Button btnRegister;
     
     @FXML protected void handleCloseButtonAction(ActionEvent event)
     {
@@ -249,6 +252,34 @@ public class LoginController
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
             stage.setX((screenBounds.getWidth() - root.prefWidth(178)) / 2);
             stage.setY((screenBounds.getHeight() - root.prefHeight(160)) / 2);
+            
+            stage.showAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    @FXML protected void onRegisterAction(ActionEvent event)
+    {
+        try
+        {
+            Stage stage = new Stage();
+            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/RegisterUI.fxml"));
+            Parent root = loader.load();
+            
+            Scene scene = new Scene(root, 300, 350);
+            
+            stage.setTitle("Register");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((screenBounds.getWidth() - root.prefWidth(300)) / 2);
+            stage.setY((screenBounds.getHeight() - root.prefHeight(350)) / 2);
             
             stage.showAndWait();
         } catch (Exception ex) {

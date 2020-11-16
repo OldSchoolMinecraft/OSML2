@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="300.0" stylesheets="@RegisterUI.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextField layoutX="76.0" layoutY="140.0" promptText="Email..." />
+      <TextField layoutX="76.0" layoutY="170.0" promptText="Username..." />
+      <Button layoutX="77.0" layoutY="266.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="149.0" text="Register">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <PasswordField layoutX="76.0" layoutY="200.0" promptText="Password..." />
+      <PasswordField layoutX="76.0" layoutY="230.0" promptText="Confirm Password..." />
+      <Pane fx:id="logoPane" layoutX="51.0" layoutY="14.0" prefHeight="99.0" prefWidth="200.0" />
+      <Button layoutX="126.0" layoutY="310.0" mnemonicParsing="false" text="Cancel" />
+   </children>
+</Pane>
