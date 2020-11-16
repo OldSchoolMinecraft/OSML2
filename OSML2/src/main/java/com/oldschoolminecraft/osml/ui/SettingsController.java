@@ -57,7 +57,7 @@ public class SettingsController
     {
         try
         {
-            Desktop.getDesktop().open(Util.getWorkingDirectory());
+            Desktop.getDesktop().open(Util.getLauncherDirectory());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -1,0 +1,42 @@
+#btnClose {
+	-fx-background-image: url('assets/close.png');
+  	-fx-background-repeat: no-repeat;
+  	-fx-background-position: center;
+  	-fx-background-size: 24 24;
+  	-fx-background-color: transparent;
+}
+
+#background {
+	-fx-background-image: url("assets/LoginUI-old.png");
+    -fx-background-repeat: stretch;
+    -fx-background-size: 3440 1440;
+    -fx-background-position: center center;
+    -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0);
+}
+
+#logoPane {
+	-fx-background-image: url("assets/logo.png");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center center;
+    -fx-effect: dropshadow(three-pass-box, black, 30, 0.3, 0, 0);
+}
+
+#lblUsername {
+	-fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0);
+}
+
+#btnClose {
+	-fx-background-image: url('assets/close.png');
+  	-fx-background-repeat: no-repeat;
+  	-fx-background-position: center;
+  	-fx-background-size: 24 24;
+  	-fx-background-color: transparent;
+}
+
+#btnClose:hover {
+	-fx-background-image: url('assets/close_highlighted.png');
+  	-fx-background-repeat: no-repeat;
+  	-fx-background-position: center;
+  	-fx-background-size: 24 24;
+  	-fx-background-color: transparent;
+}

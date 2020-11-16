@@ -7,6 +7,7 @@ import com.deadmandungeons.skinutil.MinecraftSkinUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.HydraAPI;
+import com.oldschoolminecraft.osml.mods.ModManager;
 import com.oldschoolminecraft.osml.ui.LoginController;
 import com.oldschoolminecraft.osml.update.ClientUpdater;
 import com.oldschoolminecraft.osml.util.Configuration;
@@ -51,16 +52,19 @@ public class Main extends Application
     public static File versionsDir;
     public static File tmpDir;
     public static File librariesDir;
+    public static File modsDir;
     
-    public static Stage stage;
+    public static Stage loginStage;
     public static LoginController loginController;
+    
+    public ModManager modManager;
     
     private double xOffset = 0;
     private double yOffset = 0;
     
     private static double setY;
     
-    private MinecraftProfile profile;
+    public MinecraftProfile profile;
     
     public static void main(String[] args)
     {
@@ -81,14 +85,14 @@ public class Main extends Application
         {
             instance = this;
             
-            Main.stage = stage;
+            Main.loginStage = stage;
             
             // remove windows border
             stage.initStyle(StageStyle.UNDECORATED);
             
             ObjectMapper mapper = new ObjectMapper();
             
-            configFile = new File("config.json");
+            configFile = new File(Util.getLauncherDirectory(), "config.json");
             if (configFile.exists())
             {
                 config = mapper.readValue(configFile, Configuration.class);
@@ -102,6 +106,7 @@ public class Main extends Application
             versionsDir = new File(workingDirectory, "versions");
             tmpDir = new File(workingDirectory, "tmp");
             librariesDir = new File(workingDirectory, "libraries");
+            modsDir = new File(workingDirectory, "jarmods");
             
             if (!workingDirectory.exists() || !workingDirectory.isDirectory())
                 workingDirectory.mkdir();
@@ -111,6 +116,8 @@ public class Main extends Application
                 tmpDir.mkdir();
             if (!librariesDir.exists() || !librariesDir.isDirectory())
                 librariesDir.mkdir();
+            if (!modsDir.exists() || !modsDir.isDirectory())
+                modsDir.mkdir();
             
             authFile = new File(workingDirectory, "auth.json");
             if (authFile.exists())
@@ -165,12 +172,16 @@ public class Main extends Application
                 }
             });
             
-            stage.show();
-            
             // set version label
             loginController.getVersionLabel().setText("v" + CURRENT_VERSION);
             
-            setLoggedIn(loggedIn);
+            modManager = new ModManager();
+            modManager.load(new File(modsDir, "manifest.json"));
+            
+            if (loggedIn)
+                loginImmediately();
+            else
+                stage.show();
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(1);
@@ -200,6 +211,54 @@ public class Main extends Application
             mapper.writeValue(configFile, config);
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+    
+    private void loginImmediately()
+    {
+        try
+        {
+            Stage stage = new Stage();
+            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LauncherUI.fxml"));
+            Parent root = loader.load();
+            
+            Scene scene = new Scene(root, 600, 400);
+            
+            stage.setTitle("Launcher");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            
+            stage.initStyle(StageStyle.UNDECORATED);
+            
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((screenBounds.getWidth() - scene.getWidth()) / 2);
+            stage.setY((screenBounds.getHeight() - scene.getHeight()) / 2);
+            
+            root.setOnMousePressed(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    xOffset = event.getSceneX();
+                    yOffset = event.getSceneY();
+                }
+            });
+            
+            root.setOnMouseDragged(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    stage.setX(event.getScreenX() - xOffset);
+                    stage.setY(event.getScreenY() - yOffset);
+                }
+            });
+            
+            stage.show();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.exit(0);
         }
     }
     

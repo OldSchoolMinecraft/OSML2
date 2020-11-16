@@ -17,5 +17,5 @@ public class Configuration
         this.jvmArguments = jvmArguments;
     }
     
-    public static Configuration defaultConfig = new Configuration(Util.getWorkingDirectory().getAbsolutePath(), 0, Util.getJavaExecutable().exists() ? Util.getJavaExecutable().getAbsolutePath() : "java", "-Xmx1G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn128M");
+    public static Configuration defaultConfig = new Configuration(Util.getLauncherDirectory().getAbsolutePath(), 0, Util.getJavaExecutable().exists() ? Util.getJavaExecutable().getAbsolutePath() : "java", "-Xmx1G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn128M");
 }

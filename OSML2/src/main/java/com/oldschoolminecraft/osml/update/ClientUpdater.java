@@ -207,8 +207,8 @@ public class ClientUpdater extends Thread
                 stage.setResizable(false);
                 stage.setScene(scene);
                 
-                stage.setX((Main.stage.getX() + Main.stage.getWidth() / 2d) - root.prefWidth(width) / 2d);
-                stage.setY((Main.stage.getY() + Main.stage.getHeight() / 2d) - root.prefHeight(height) / 2d);
+                stage.setX((Main.loginStage.getX() + Main.loginStage.getWidth() / 2d) - root.prefWidth(width) / 2d);
+                stage.setY((Main.loginStage.getY() + Main.loginStage.getHeight() / 2d) - root.prefHeight(height) / 2d);
                 
                 root.setOnMousePressed(new EventHandler<MouseEvent>()
                 {

@@ -49,25 +49,25 @@ public class Util
     
     public static File getBinDirectory()
     {
-        return new File(getWorkingDirectory(), "bin");
+        return new File(getLauncherDirectory(), "bin");
     }
     
-    public static File getWorkingDirectory()
+    public static File getLauncherDirectory()
     {
         switch (OS.getOS())
         {
             default:
                 System.out.println("Unknown operating system (assuming Windows).");
-                return new File(backslashes(System.getProperty("user.home") + "/AppData/Roaming/.osm/"));
+                return new File(backslashes(System.getProperty("user.home") + "/AppData/Roaming/.osml/"));
             case Windows:
-                return new File(backslashes(System.getProperty("user.home") + "/AppData/Roaming/.osm/"));
+                return new File(backslashes(System.getProperty("user.home") + "/AppData/Roaming/.osml/"));
             case Mac:
-                return new File("~/Library/Application Support/osm/");
+                return new File("~/Library/Application Support/osml/");
             case Linux:
-                return new File(getLinuxHomeDirectory() + "/.osm/");
+                return new File(getLinuxHomeDirectory() + "/.osml/");
             case Unsupported:
                 System.out.println("Unsupported operating system (assuming Linux).");
-                return new File(getLinuxHomeDirectory() + "/.osm/");
+                return new File(getLinuxHomeDirectory() + "/.osml/");
         }
     }
     

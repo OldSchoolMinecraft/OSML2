@@ -109,7 +109,49 @@ public class LoginController
                     alert.showAndWait();
                 }
                 
-                Main.setLoggedIn(true);
+                try
+                {
+                    Stage stage = new Stage();
+                    
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LauncherUI.fxml"));
+                    Parent root = loader.load();
+                    
+                    Scene scene = new Scene(root, 600, 400);
+                    
+                    stage.setTitle("Launcher");
+                    stage.setResizable(false);
+                    stage.setScene(scene);
+                    
+                    stage.initStyle(StageStyle.UNDECORATED);
+                    
+                    stage.setX((scene.getX() + scene.getWidth() / 2d) - root.prefWidth(600) / 2d);
+                    stage.setY((scene.getY() + scene.getHeight() / 2d) - root.prefHeight(400) / 2d);
+                    
+                    root.setOnMousePressed(new EventHandler<MouseEvent>()
+                    {
+                        @Override
+                        public void handle(MouseEvent event)
+                        {
+                            settingsXOffset = event.getSceneX();
+                            settingsYOffset = event.getSceneY();
+                        }
+                    });
+                    
+                    root.setOnMouseDragged(new EventHandler<MouseEvent>()
+                    {
+                        @Override
+                        public void handle(MouseEvent event)
+                        {
+                            stage.setX(event.getScreenX() - settingsXOffset);
+                            stage.setY(event.getScreenY() - settingsYOffset);
+                        }
+                    });
+                    
+                    stage.show();
+                    Main.loginStage.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             } else {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Oh noes!");
@@ -120,7 +162,7 @@ public class LoginController
         } else {
             new ClientUpdater(() ->
             {
-                Main.stage.close();
+                Main.loginStage.close();
                 new Launcher().launch();
             }).start();
         }
@@ -149,12 +191,12 @@ public class LoginController
             stage.setResizable(false);
             stage.setScene(scene);
             
-            stage.initOwner(Main.stage);
+            stage.initOwner(Main.loginStage);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.initModality(Modality.APPLICATION_MODAL);
             
-            stage.setX((Main.stage.getX() + Main.stage.getWidth() / 2d) - root.prefWidth(545) / 2d);
-            stage.setY((Main.stage.getY() + Main.stage.getHeight() / 2d) - root.prefHeight(286) / 2d);
+            stage.setX((Main.loginStage.getX() + Main.loginStage.getWidth() / 2d) - root.prefWidth(545) / 2d);
+            stage.setY((Main.loginStage.getY() + Main.loginStage.getHeight() / 2d) - root.prefHeight(286) / 2d);
             
             //stage.setX((Main.stage.getWidth() - root.prefWidth(545)) / 2);
             //stage.setY((Main.stage.getHeight() - root.prefHeight(286)) / 2);
@@ -200,7 +242,7 @@ public class LoginController
             stage.setResizable(false);
             stage.setScene(scene);
             
-            stage.initOwner(Main.stage);
+            stage.initOwner(Main.loginStage);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.initModality(Modality.APPLICATION_MODAL);
             

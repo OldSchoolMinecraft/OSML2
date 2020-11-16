@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<Pane fx:id="background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@LauncherUI.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oldschoolminecraft.osml.ui.LauncherController">
+   <children>
+      <Button fx:id="btnLogout" layoutX="531.0" layoutY="368.0" mnemonicParsing="false" onAction="#onLogoutAction" prefHeight="25.0" prefWidth="63.0" text="Logout" />
+      <Button fx:id="btnPlay" layoutX="228.0" layoutY="354.0" mnemonicParsing="false" onAction="#onPlayAction" prefHeight="40.0" prefWidth="145.0" text="Play">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnSettings" layoutX="6.0" layoutY="368.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Settings" />
+      <Button fx:id="btnMods" layoutX="6.0" layoutY="338.0" mnemonicParsing="false" onAction="#onModsAction" prefHeight="25.0" prefWidth="70.0" text="Mods" />
+      <Button fx:id="btnCosmetics" layoutX="6.0" layoutY="308.0" mnemonicParsing="false" text="Cosmetics" />
+      <Button fx:id="btnClose" layoutX="570.0" layoutY="6.0" mnemonicParsing="false" onAction="#onCloseAction" prefHeight="24.0" prefWidth="24.0" />
+      <Pane fx:id="logoPane" layoutX="6.0" layoutY="8.0" prefHeight="73.0" prefWidth="178.0" />
+      <Pane fx:id="playerPreview" layoutX="211.0" layoutY="63.0" prefHeight="260.0" prefWidth="180.0" />
+      <Label fx:id="lblUsername" alignment="CENTER" contentDisplay="CENTER" layoutX="268.0" layoutY="52.0" text="Username" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblVersion" layoutX="13.0" layoutY="76.0" text="v0.0.0" textFill="#00000080">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>
