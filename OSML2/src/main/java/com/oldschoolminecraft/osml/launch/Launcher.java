@@ -35,11 +35,7 @@ public class Launcher
             
             Library client = new Library(manifest.client);
             File clientFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", client.name, client.version, client.name, client.version));
-            libsb.append(clientFile.getAbsolutePath());
-            
-            if (!Main.instance.modManager.mods.isEmpty())
-                for (Mod mod : Main.instance.modManager.mods)
-                    libsb.append(mod.getPath() + File.pathSeparator);
+            libsb.append(clientFile.getAbsolutePath() + ((Main.modManager.mods.size() > 0) ? ";" : ""));
             
             ArrayList<String> launchArguments = new ArrayList<String>();
             
@@ -79,7 +75,7 @@ public class Launcher
             
             launchArguments.add("-Djava.library.path=" + nativesDir.getAbsolutePath());
             launchArguments.add("-classpath");
-            launchArguments.add(Util.replaceLast(libsb.toString().trim(), File.pathSeparator, ""));
+            launchArguments.add(libsb.toString().trim());
             launchArguments.add("net.minecraft.client.Minecraft");
             
             String[] launchParameters = manifest.launchArgs.split(" ");

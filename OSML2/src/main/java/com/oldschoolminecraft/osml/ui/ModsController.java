@@ -1,6 +1,7 @@
 package com.oldschoolminecraft.osml.ui;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.mods.Mod;
@@ -15,7 +16,7 @@ import javafx.stage.Stage;
 
 public class ModsController
 {
-    @FXML protected ListView<String> lstMods;
+    @FXML protected ListView<Mod> lstMods;
     
     @FXML protected Button btnAddMod;
     @FXML protected Button btnRemoveMod;
@@ -23,8 +24,8 @@ public class ModsController
     
     @FXML protected void initialize()
     {
-        for (Mod mod : Main.instance.modManager.mods)
-            lstMods.getItems().add(mod.getName());
+        for (Mod mod : Main.modManager.mods)
+            lstMods.getItems().add(mod);
     }
     
     @FXML protected void onAddModAction(ActionEvent event)
@@ -42,7 +43,7 @@ public class ModsController
             File file = fileChooser.showOpenDialog(btnAddMod.getScene().getWindow());
             
             if (file != null && file.exists())
-                lstMods.getItems().add(file.getName());
+                lstMods.getItems().add(new Mod(file.getName(), file.getAbsolutePath()));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -52,14 +53,30 @@ public class ModsController
     {
         if (!lstMods.getSelectionModel().isEmpty())
         {
-            for (String mod : lstMods.getSelectionModel().getSelectedItems())
-                Main.instance.modManager.removeMod(mod);
+            for (Mod mod : lstMods.getSelectionModel().getSelectedItems())
+                lstMods.getItems().remove(mod);
         }
     }
     
     @FXML protected void onCloseAction()
     {
-        Main.instance.modManager.save(new File(Main.modsDir, "manifest.json"));
+        Main.modManager.mods.clear();
+        for (Mod mod : lstMods.getItems())
+            Main.modManager.mods.add(mod);
+        Main.modManager.save();
         ((Stage) btnClose.getScene().getWindow()).close();
+    }
+    
+    public boolean isModsEmpty()
+    {
+        return lstMods.getItems().isEmpty();
+    }
+    
+    public ArrayList<Mod> getMods()
+    {
+        ArrayList<Mod> mods = new ArrayList<Mod>();
+        for (Mod mod : lstMods.getItems())
+            mods.add(mod);
+        return mods;
     }
 }

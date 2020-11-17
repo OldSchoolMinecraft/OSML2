@@ -14,7 +14,7 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-      <Button fx:id="btnSettings" layoutX="6.0" layoutY="368.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Settings" />
+      <Button fx:id="btnSettings" layoutX="6.0" layoutY="368.0" mnemonicParsing="false" onAction="#onSettingsAction" prefHeight="25.0" prefWidth="70.0" text="Settings" />
       <Button fx:id="btnMods" layoutX="6.0" layoutY="338.0" mnemonicParsing="false" onAction="#onModsAction" prefHeight="25.0" prefWidth="70.0" text="Mods" />
       <Button fx:id="btnCosmetics" layoutX="6.0" layoutY="308.0" mnemonicParsing="false" text="Cosmetics" />
       <Button fx:id="btnClose" layoutX="570.0" layoutY="6.0" mnemonicParsing="false" onAction="#onCloseAction" prefHeight="24.0" prefWidth="24.0" />

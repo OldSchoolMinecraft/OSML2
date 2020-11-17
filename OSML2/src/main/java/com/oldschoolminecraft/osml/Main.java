@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.HydraAPI;
 import com.oldschoolminecraft.osml.mods.ModManager;
+import com.oldschoolminecraft.osml.ui.LauncherController;
 import com.oldschoolminecraft.osml.ui.LoginController;
 import com.oldschoolminecraft.osml.update.ClientUpdater;
 import com.oldschoolminecraft.osml.util.Configuration;
@@ -45,6 +46,7 @@ public class Main extends Application
     public static AuthFile authDataFile;
     public static Configuration config;
     public static ClientUpdater clientUpdater;
+    public static ModManager modManager;
     
     public static File workingDirectory;
     public static File authFile;
@@ -56,9 +58,8 @@ public class Main extends Application
     public static File modsManifestFile;
     
     public static Stage loginStage;
+    public static Stage launcherStage;
     public static LoginController loginController;
-    
-    public ModManager modManager;
     
     private double xOffset = 0;
     private double yOffset = 0;
@@ -87,6 +88,8 @@ public class Main extends Application
             instance = this;
             
             Main.loginStage = stage;
+            
+            modManager = new ModManager();
             
             // remove windows border
             stage.initStyle(StageStyle.UNDECORATED);
@@ -121,6 +124,8 @@ public class Main extends Application
                 librariesDir.mkdir();
             if (!modsDir.exists() || !modsDir.isDirectory())
                 modsDir.mkdir();
+            if (!modsManifestFile.getParentFile().exists() || !modsManifestFile.getParentFile().isDirectory())
+                modsManifestFile.getParentFile().mkdirs();
             
             authFile = new File(workingDirectory, "auth.json");
             if (authFile.exists())
@@ -176,11 +181,10 @@ public class Main extends Application
             // set version label
             loginController.getVersionLabel().setText("v" + CURRENT_VERSION);
             
-            modManager = new ModManager();
-            modManager.load(modsManifestFile);
+            modManager.load();
             
             if (loggedIn)
-                loginImmediately();
+                openLauncherUI();
             else
                 stage.show();
         } catch (Exception ex) {
@@ -215,7 +219,7 @@ public class Main extends Application
         }
     }
     
-    private void loginImmediately()
+    public void openLauncherUI()
     {
         try
         {
@@ -223,7 +227,7 @@ public class Main extends Application
             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LauncherUI.fxml"));
             Parent root = loader.load();
-            
+            LauncherController controller = (LauncherController) loader.getController();
             Scene scene = new Scene(root, 600, 400);
             
             stage.setTitle("Launcher");
@@ -255,6 +259,9 @@ public class Main extends Application
                     stage.setY(event.getScreenY() - yOffset);
                 }
             });
+            
+            controller.setStage(stage);
+            launcherStage = stage;
             
             stage.show();
         } catch (Exception ex) {

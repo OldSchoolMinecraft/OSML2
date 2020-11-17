@@ -84,6 +84,12 @@ public class ClientUpdater extends Thread
                 {
                     try
                     {
+                        if (Main.config.disableUpdates)
+                        {
+                            System.out.println(String.format("Skipping %s-%s (updates disabled)", dl.getLibrary().name, dl.getLibrary().version));
+                            continue;
+                        }
+                        
                         completedMetaDownloads++;
                         int currentProgress = (completedMetaDownloads / totalMetaDownloads) * 100;
                         controller.getProgressBar().setProgress(currentProgress);
@@ -132,6 +138,12 @@ public class ClientUpdater extends Thread
                 {
                     try
                     {
+                        if (Main.config.disableUpdates)
+                        {
+                            System.out.println(String.format("Skipping %s-%s (updates disabled)", dl.getLibrary().name, dl.getLibrary().version));
+                            continue;
+                        }
+                        
                         System.out.println(String.format("Downloading %s-%s", dl.getLibrary().name, dl.getLibrary().version));
                     
                         dl.connect();
@@ -207,8 +219,8 @@ public class ClientUpdater extends Thread
                 stage.setResizable(false);
                 stage.setScene(scene);
                 
-                stage.setX((Main.loginStage.getX() + Main.loginStage.getWidth() / 2d) - root.prefWidth(width) / 2d);
-                stage.setY((Main.loginStage.getY() + Main.loginStage.getHeight() / 2d) - root.prefHeight(height) / 2d);
+                stage.setX((Main.launcherStage.getX() + Main.launcherStage.getWidth() / 2d) - root.prefWidth(width) / 2d);
+                stage.setY((Main.launcherStage.getY() + Main.launcherStage.getHeight() / 2d) - root.prefHeight(height) / 2d);
                 
                 root.setOnMousePressed(new EventHandler<MouseEvent>()
                 {
@@ -230,7 +242,8 @@ public class ClientUpdater extends Thread
                     }
                 });
                 
-                stage.show();
+                if (!Main.config.disableUpdates)
+                    stage.show();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

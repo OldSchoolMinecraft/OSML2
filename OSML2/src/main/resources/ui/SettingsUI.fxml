@@ -32,6 +32,7 @@
          <Separator layoutX="119.0" layoutY="105.0" prefWidth="411.0" />
          <Label disable="true" layoutX="12.0" layoutY="122.0" text="Use version" />
          <ChoiceBox fx:id="cmbVersion" disable="true" layoutX="83.0" layoutY="119.0" prefHeight="25.0" prefWidth="447.0" />
+         <CheckBox fx:id="chkDisableUpdates" layoutX="71.0" layoutY="254.0" mnemonicParsing="false" text="Disable updates" />
       </children>
    </AnchorPane>
 </Pane>

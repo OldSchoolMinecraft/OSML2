@@ -1,5 +1,6 @@
 package com.oldschoolminecraft.osml.ui;
 
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +12,9 @@ import com.oldschoolminecraft.osml.launch.Launcher;
 import com.oldschoolminecraft.osml.update.ClientUpdater;
 import com.oldschoolminecraft.osml.util.JSONWebResponse;
 import com.oldschoolminecraft.osml.util.Util;
+import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile;
+import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile.Skin;
+import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile.Textures;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -112,49 +116,10 @@ public class LoginController
                     alert.showAndWait();
                 }
                 
-                try
-                {
-                    Stage stage = new Stage();
-                    
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LauncherUI.fxml"));
-                    Parent root = loader.load();
-                    
-                    Scene scene = new Scene(root, 600, 400);
-                    
-                    stage.setTitle("Launcher");
-                    stage.setResizable(false);
-                    stage.setScene(scene);
-                    
-                    stage.initStyle(StageStyle.UNDECORATED);
-                    
-                    stage.setX((scene.getX() + scene.getWidth() / 2d) - root.prefWidth(600) / 2d);
-                    stage.setY((scene.getY() + scene.getHeight() / 2d) - root.prefHeight(400) / 2d);
-                    
-                    root.setOnMousePressed(new EventHandler<MouseEvent>()
-                    {
-                        @Override
-                        public void handle(MouseEvent event)
-                        {
-                            settingsXOffset = event.getSceneX();
-                            settingsYOffset = event.getSceneY();
-                        }
-                    });
-                    
-                    root.setOnMouseDragged(new EventHandler<MouseEvent>()
-                    {
-                        @Override
-                        public void handle(MouseEvent event)
-                        {
-                            stage.setX(event.getScreenX() - settingsXOffset);
-                            stage.setY(event.getScreenY() - settingsYOffset);
-                        }
-                    });
-                    
-                    stage.show();
-                    Main.loginStage.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                Main.instance.profile = new MinecraftProfile(UUID.fromString(Main.authDataFile.uuid), Main.authDataFile.username, new Textures(new Skin(Util.get("https://www.oldschoolminecraft.com/getskin?username=" + Main.authDataFile.username), false), ""));
+                
+                Main.loginStage.close();
+                Main.instance.openLauncherUI();
             } else {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Oh noes!");

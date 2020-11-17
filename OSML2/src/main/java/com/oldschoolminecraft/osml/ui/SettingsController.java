@@ -32,6 +32,8 @@ public class SettingsController
     @FXML protected Button saveButton;
     @FXML protected Button cancelButton;
     
+    @FXML protected CheckBox chkDisableUpdates;
+    
     @FXML public void initialize()
     {
         if (!Main.config.gameDirectory.equals(Configuration.defaultConfig.gameDirectory))
@@ -48,6 +50,8 @@ public class SettingsController
         txtGameDirectory.setText(Main.config.gameDirectory);
         txtExecutable.setText(Main.config.javaExecutable);
         txtJVMArguments.setText(Main.config.jvmArguments);
+        
+        chkDisableUpdates.setSelected(Main.config.disableUpdates);
         
         cmbVersion.setValue("b1.7.3");
         cmbVersion.setItems(FXCollections.observableArrayList("b1.7.3"));
@@ -93,6 +97,8 @@ public class SettingsController
             config.jvmArguments = txtJVMArguments.getText();
         else
             config.jvmArguments = Configuration.defaultConfig.jvmArguments;
+        
+        config.disableUpdates = chkDisableUpdates.isSelected();
         
         Main.config = config;
         Main.saveConfig();

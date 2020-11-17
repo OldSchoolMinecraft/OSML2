@@ -4,52 +4,35 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oldschoolminecraft.osml.Main;
 
 public class ModManager
 {
-    public ArrayList<Mod> mods;
+    public ArrayList<Mod> mods = new ArrayList<Mod>();
     
-    public ModManager()
-    {
-        this.mods = new ArrayList<Mod>();
-    }
-    
-    public void addMod(Mod mod)
-    {
-        mods.add(mod);
-    }
-    
-    public void removeMod(Mod mod)
-    {
-        mods.remove(mod);
-    }
-    
-    public void removeMod(String fileName)
-    {
-        for (Mod mod : mods)
-            if (mod.getName() == fileName)
-                mods.remove(mod);
-    }
-    
-    public void load(File src)
+    public void load()
     {
         try
         {
-            if (src.exists())
+            if (!Main.modsManifestFile.exists())
             {
-                ObjectMapper mapper = new ObjectMapper();
-                ModsManifest manifest = mapper.readValue(src, ModsManifest.class);
-                for (String path : manifest.mods)
-                    mods.add(new Mod(path, new File(path).getName()));
-            } else {
-                save(src);
+                save();
+                return;
+            }
+            
+            ObjectMapper mapper = new ObjectMapper();
+            ModsManifest manifest = mapper.readValue(Main.modsManifestFile, ModsManifest.class);
+            for (String mod : manifest.mods)
+            {
+                File modFile = new File(mod);
+                mods.add(new Mod(modFile.getName(), modFile.getAbsolutePath()));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
     
-    public void save(File dst)
+    public void save()
     {
         try
         {
@@ -57,9 +40,22 @@ public class ModManager
             ModsManifest manifest = new ModsManifest();
             for (Mod mod : mods)
                 manifest.mods.add(mod.getPath());
-            mapper.writeValue(dst, manifest);
+            mapper.writeValue(Main.modsManifestFile, manifest);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public void applyMods()
+    {
+        //TODO: appply jar mods
+    }
+    
+    public void registerShutdownHook()
+    {
+        Runtime.getRuntime().addShutdownHook(new Thread(() ->
+        {
+            //TODO: remove modded jar
+        }));
     }
 }

@@ -46,10 +46,15 @@ public class LauncherController
     
     private double modsXOffset, modsYOffset;
     
+    private Stage stage;
+    
     @FXML protected void onPlayAction(ActionEvent event)
     {
-        ((Stage) btnPlay.getScene().getWindow()).close();
-        new ClientUpdater(() ->  new Launcher().launch()).start();
+        new ClientUpdater(() ->
+        {
+            ((Stage) btnPlay.getScene().getWindow()).hide();
+            new Launcher().launch();
+        }).start();
     }
     
     private double loginXOffset, loginYOffset;
@@ -203,8 +208,8 @@ public class LauncherController
             stage.initStyle(StageStyle.UNDECORATED);
             stage.initModality(Modality.APPLICATION_MODAL);
             
-            stage.setX((Main.loginStage.getX() + Main.loginStage.getWidth() / 2d) - root.prefWidth(545) / 2d);
-            stage.setY((Main.loginStage.getY() + Main.loginStage.getHeight() / 2d) - root.prefHeight(286) / 2d);
+            stage.setX((this.stage.getX() + this.stage.getWidth() / 2d) - root.prefWidth(545) / 2d);
+            stage.setY((this.stage.getY() + this.stage.getHeight() / 2d) - root.prefHeight(286) / 2d);
             
             root.setOnMousePressed(new EventHandler<MouseEvent>()
             {
@@ -254,5 +259,10 @@ public class LauncherController
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public void setStage(Stage stage)
+    {
+        this.stage = stage;
     }
 }
