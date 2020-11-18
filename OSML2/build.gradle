@@ -7,6 +7,11 @@ buildscript
 		classpath group: 'org.json', name: 'json', version: '20200518'
 		classpath group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.2'
 		classpath group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
+		
+		classpath group: 'net.bytebuddy', name: 'byte-buddy', version: '1.10.18'
+		classpath group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.10.18'
+		classpath group: 'de.schlichtherle.truezip', name: 'truezip-driver-zip', version: '7.7.10'
+		classpath group: 'de.schlichtherle.truezip', name: 'truezip-file', version: '7.7.10'
     }
 	
     repositories
@@ -44,6 +49,10 @@ dependencies
 	compile group: 'org.json', name: 'json', version: '20200518'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.2'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
+	compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.10.18'
+	compile group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.10.18'
+	compile group: 'de.schlichtherle.truezip', name: 'truezip-driver-zip', version: '7.7.10'
+	compile group: 'de.schlichtherle.truezip', name: 'truezip-file', version: '7.7.10'
 	
 	//extraLibs group: 'org.json', name: 'json', version: '20200518'
 	//extraLibs group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.2'

@@ -1,10 +1,16 @@
 package com.oldschoolminecraft.osml.mods;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.Main;
+import com.oldschoolminecraft.osml.update.Library;
+import com.oldschoolminecraft.osml.update.VersionManager;
+import com.oldschoolminecraft.osml.update.VersionManifest;
+import com.oldschoolminecraft.osml.util.ZipUtil;
 
 public class ModManager
 {
@@ -48,14 +54,33 @@ public class ModManager
     
     public void applyMods()
     {
-        //TODO: appply jar mods
+        try
+        {
+            File playJar = new File(Main.modsDir, "minecraft.jar");
+            
+            if (playJar.exists())
+                playJar.delete();
+            
+            VersionManifest manifest = new VersionManager().loadInternal("b1.7.3");
+            
+            Library client = new Library(manifest.client);
+            File clientFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", client.name, client.version, client.name, client.version));
+            
+            if (clientFile.exists())
+                Files.copy(Paths.get(clientFile.getAbsolutePath()), Paths.get(playJar.getAbsolutePath()));
+            
+            for (Mod mod : mods)
+                ZipUtil.copyContents(mod.getPath(), playJar.getAbsolutePath());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
     public void registerShutdownHook()
     {
         Runtime.getRuntime().addShutdownHook(new Thread(() ->
         {
-            //TODO: remove modded jar
+            System.out.println("Mod manager shutting down...");
         }));
     }
 }

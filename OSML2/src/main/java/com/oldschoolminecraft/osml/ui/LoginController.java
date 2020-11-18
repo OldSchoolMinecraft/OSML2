@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.HydraAPI;
-import com.oldschoolminecraft.osml.launch.Launcher;
-import com.oldschoolminecraft.osml.update.ClientUpdater;
 import com.oldschoolminecraft.osml.util.JSONWebResponse;
 import com.oldschoolminecraft.osml.util.Util;
 import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile;
@@ -27,7 +25,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -52,15 +49,21 @@ public class LoginController
     
     @FXML protected Button btnClose;
     @FXML protected Button btnLogin;
-    @FXML protected Button btnLogout;
-    @FXML protected Button btnSettings;
-    @FXML protected Button btnCosmetics;
     
     @FXML protected CheckBox chkRememberAccount;
     
-    @FXML protected Label lblUsername;
-    
     @FXML protected Button btnRegister;
+    
+    @FXML protected void initialize()
+    {
+        boolean flag = false;
+        
+        txtUsername.setVisible(flag ? false : true);
+        txtPassword.setVisible(flag ? false : true);
+        btnLogin.setText(flag ? "Play" : "Login");
+        
+        chkRememberAccount.setVisible(flag ? false : true);
+    }
     
     @FXML protected void handleCloseButtonAction(ActionEvent event)
     {
@@ -70,69 +73,60 @@ public class LoginController
     
     @FXML protected void handleLoginAction(ActionEvent event)
     {
-        if (!Main.loggedIn)
-        {
-            String username = txtUsername.getText();
-            String password = txtPassword.getText();
-            
-            Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
-            Matcher mat = pattern.matcher(username);
+        String username = txtUsername.getText();
+        String password = txtPassword.getText();
+        
+        Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
+        Matcher mat = pattern.matcher(username);
 
-            JSONWebResponse res;
-            if(mat.matches())
-                res = HydraAPI.authenticateEmail(username, password);
-            else
-                res = HydraAPI.authenticateUsername(username, password);
-            
-            if (res.status == 200)
+        JSONWebResponse res;
+        if(mat.matches())
+            res = HydraAPI.authenticateEmail(username, password);
+        else
+            res = HydraAPI.authenticateUsername(username, password);
+        
+        if (res.status == 200)
+        {
+            if (res.data.has("error"))
             {
-                if (res.data.has("error"))
-                {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Oh noes!");
-                    alert.setHeaderText("Something went wrong!");
-                    alert.setContentText("Hydra: " + res.data.getString("error"));
-                    alert.showAndWait();
-                    return;
-                }
-                
-                Main.authDataFile = new AuthFile();
-                Main.authDataFile.uuid = res.data.getString("uuid");
-                Main.authDataFile.username = res.data.getString("username");
-                Main.authDataFile.accessToken = res.data.getString("token");
-                
-                if (chkRememberAccount.isSelected())
-                    Main.saveAuthData();
-                
-                try
-                {
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.writeValue(Main.authFile, Main.authDataFile);
-                } catch (Exception ex) {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Oh noes!");
-                    alert.setHeaderText("Something went wrong!");
-                    alert.setContentText(String.format("Failed to save auth data: " + ex.getMessage()));
-                    alert.showAndWait();
-                }
-                
-                Main.instance.profile = new MinecraftProfile(UUID.fromString(Main.authDataFile.uuid), Main.authDataFile.username, new Textures(new Skin(Util.get("https://www.oldschoolminecraft.com/getskin?username=" + Main.authDataFile.username), false), ""));
-                
-                Main.loginStage.close();
-                Main.instance.openLauncherUI();
-            } else {
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Oh noes!");
                 alert.setHeaderText("Something went wrong!");
-                alert.setContentText(String.format("Failed to authenticate (status %s): %s", res.status, (res.data.has("errorMessage") ? res.data.getString("errorMessage") : "unknown")));
+                alert.setContentText("Hydra: " + res.data.getString("error"));
+                alert.showAndWait();
+                return;
+            }
+            
+            Main.authDataFile = new AuthFile();
+            Main.authDataFile.uuid = res.data.getString("uuid");
+            Main.authDataFile.username = res.data.getString("username");
+            Main.authDataFile.accessToken = res.data.getString("token");
+            
+            if (chkRememberAccount.isSelected())
+                Main.saveAuthData();
+            
+            try
+            {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.writeValue(Main.authFile, Main.authDataFile);
+            } catch (Exception ex) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Oh noes!");
+                alert.setHeaderText("Something went wrong!");
+                alert.setContentText(String.format("Failed to save auth data: " + ex.getMessage()));
                 alert.showAndWait();
             }
+            
+            Main.instance.profile = new MinecraftProfile(UUID.fromString(Main.authDataFile.uuid), Main.authDataFile.username, new Textures(new Skin(Util.get("https://www.oldschoolminecraft.com/getskin?username=" + Main.authDataFile.username), false), ""));
+            
+            Main.loginStage.close();
+            Main.instance.openLauncherUI();
         } else {
-            new ClientUpdater(() ->
-            {
-                Main.loginStage.close();
-                new Launcher().launch();
-            }).start();
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Oh noes!");
+            alert.setHeaderText("Something went wrong!");
+            alert.setContentText(String.format("Failed to authenticate (status %s): %s", res.status, (res.data.has("errorMessage") ? res.data.getString("errorMessage") : "unknown")));
+            alert.showAndWait();
         }
     }
     
@@ -277,21 +271,6 @@ public class LoginController
         return btnLogin;
     }
     
-    public Button getLogoutButton()
-    {
-        return btnLogout;
-    }
-    
-    public Button getSettingsButton()
-    {
-        return btnSettings;
-    }
-    
-    public Button getCosmeticsButton()
-    {
-        return btnCosmetics;
-    }
-    
     public Pane getPlayerPreview()
     {
         return playerPreview;
@@ -300,11 +279,6 @@ public class LoginController
     public CheckBox getRememberAccountBox()
     {
         return chkRememberAccount;
-    }
-    
-    public Label getUsernameLabel()
-    {
-        return lblUsername;
     }
     
     public Label getVersionLabel()

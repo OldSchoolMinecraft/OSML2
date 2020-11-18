@@ -34,6 +34,7 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.bytebuddy.agent.ByteBuddyAgent;
 
 @SuppressWarnings("all")
 public class Main extends Application
@@ -76,6 +77,8 @@ public class Main extends Application
         
         if (debug)
             System.out.println("Running in IDE mode. Self updater will be disabled.");
+        
+        ByteBuddyAgent.install();
         
         launch(args);
     }
@@ -142,7 +145,12 @@ public class Main extends Application
             }
             
             if (loggedIn)
-                profile = new MinecraftProfile(UUID.fromString(authDataFile.uuid), authDataFile.username, new Textures(new Skin(Util.get("https://www.oldschoolminecraft.com/getskin?username=" + authDataFile.username), false), ""));
+            {
+                profile = new MinecraftProfile(UUID.fromString(authDataFile.uuid), authDataFile.username, new Textures(new Skin("https://www.oldschoolminecraft.com/getskin?direct&uuid=" + authDataFile.uuid, false), ""));
+                    
+                System.out.println("Logged in as: " + authDataFile.username);
+                //System.out.println("Skin URL: " + profile.getTextures().getSkin().get().getUrl());
+            }
             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LoginUI.fxml"));
             Parent root = loader.load();
@@ -280,27 +288,27 @@ public class Main extends Application
         
         loginController.getPlayerPreview().setVisible(flag ? true : false);
         loginController.getRememberAccountBox().setVisible(flag ? false : true);
-        loginController.getUsernameLabel().setVisible(flag ? true : false);
-        loginController.getUsernameLabel().setText(flag ? authDataFile.username : "Username");
+        //loginController.getUsernameLabel().setVisible(flag ? true : false);
+        //loginController.getUsernameLabel().setText(flag ? authDataFile.username : "Username");
         
-        loginController.getLogoutButton().setVisible(flag ? true : false);
-        loginController.getSettingsButton().setDisable(flag ? false : true);
-        loginController.getCosmeticsButton().setDisable(flag ? false : true);
+        //loginController.getLogoutButton().setVisible(flag ? true : false);
+        //loginController.getSettingsButton().setDisable(flag ? false : true);
+        //loginController.getCosmeticsButton().setDisable(flag ? false : true);
         
         // disable access to cosmetics manager until its complete
-        loginController.getCosmeticsButton().setDisable(true);
+        //loginController.getCosmeticsButton().setDisable(true);
         
         if (flag)
         {
-            loginController.getSettingsButton().setLayoutY(setY + (24 + 5));
-            loginController.getCosmeticsButton().setLayoutY(setY + (24 + 5));
+            //loginController.getSettingsButton().setLayoutY(setY + (24 + 5));
+            //loginController.getCosmeticsButton().setLayoutY(setY + (24 + 5));
             
             BackgroundImage myBI = new BackgroundImage(SwingFXUtils.toFXImage(MinecraftSkinUtil.getPlayerSkinFront(instance.profile, 6).getImage(), null), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
             loginController.getPlayerPreview().setBackground(new Background(myBI));
             loginController.getPlayerPreview().setStyle("-fx-effect: dropshadow(three-pass-box, black, 30, 0.3, 0, 0);");
         } else {
-            loginController.getSettingsButton().setLayoutY(setY);
-            loginController.getCosmeticsButton().setLayoutY(setY);
+            //loginController.getSettingsButton().setLayoutY(setY);
+            //loginController.getCosmeticsButton().setLayoutY(setY);
         }
     }
 }

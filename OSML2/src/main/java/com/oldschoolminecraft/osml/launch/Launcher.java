@@ -1,10 +1,14 @@
 package com.oldschoolminecraft.osml.launch;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.oldschoolminecraft.osml.Main;
-import com.oldschoolminecraft.osml.mods.Mod;
+import com.oldschoolminecraft.osml.patches.SkinFix;
 import com.oldschoolminecraft.osml.update.Library;
 import com.oldschoolminecraft.osml.update.VersionManager;
 import com.oldschoolminecraft.osml.update.VersionManifest;
@@ -12,10 +16,112 @@ import com.oldschoolminecraft.osml.util.OS;
 import com.oldschoolminecraft.osml.util.Util;
 import com.oldschoolminecraft.osml.util.ZipUtil;
 
+import de.schlichtherle.truezip.file.TFile;
+
 @SuppressWarnings("all")
 public class Launcher
 {
     public Launcher() {}
+    
+    public void debugLaunch()
+    {
+        try
+        {
+            VersionManifest manifest = new VersionManager().loadInternal("b1.7.3");
+            
+            ArrayList<File> loadQueue = new ArrayList<File>();
+            for (String input : manifest.libraries)
+            {
+                Library lib = new Library(input);
+                File libFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", lib.name, lib.version, lib.name, lib.version));
+                if (!libFile.exists())
+                    System.out.println(String.format("Library doesn't exist: %s-%s", lib.name, lib.version));
+                loadQueue.add(libFile);
+            }
+            Library clientLib = new Library(manifest.client);
+            File clientFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", clientLib.name, clientLib.version, clientLib.name, clientLib.version));
+            
+            // prepare natives
+            String nativesInput = manifest.natives.windows;
+            switch (OS.getOS())
+            {
+                default:
+                    nativesInput = manifest.natives.windows;
+                    break;
+                case Windows:
+                    nativesInput = manifest.natives.windows;
+                    break;
+                case Linux:
+                    nativesInput = manifest.natives.linux;
+                    break;
+                case Mac:
+                    nativesInput = manifest.natives.osx;
+                    break;
+            }
+            Library natives = new Library(nativesInput);
+            File nativesFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", natives.name, natives.version, natives.name, natives.version));
+            File clientDir = clientFile.getParentFile();
+            File nativesDir = new File(clientDir, "natives");
+            
+            if (!nativesDir.exists())
+                nativesDir.mkdir();
+            
+            if (nativesFile.exists())
+                ZipUtil.unzip(nativesFile.getAbsolutePath(), nativesDir.getAbsolutePath());
+            else
+                System.out.println("Natives file doesn't exist");
+            
+            Object lock = new Object();
+            
+            // apply mods
+            if (Main.modManager.mods.size() > 0)
+            {
+                System.out.println("Applying jarmods...");
+                
+                Main.modManager.applyMods();
+                
+                /*synchronized(this)
+                {
+                    File dir = Main.modsDir;
+                    for (File file : dir.listFiles())
+                        if (file.getName().endsWith(".tmp"))
+                            while (file.exists())
+                                Thread.sleep(100);
+                }*/
+                
+                System.out.println("Applied jarmods");
+                
+                clientFile = new File(Main.modsDir, "minecraft.jar");
+            }
+            
+            ArrayList<URL> urls_pre = new ArrayList<URL>();
+            for (File file : loadQueue)
+                urls_pre.add(Paths.get(file.getAbsolutePath()).toUri().toURL());
+            urls_pre.add(Paths.get(clientFile.getAbsolutePath()).toUri().toURL());
+            URL[] urls = new URL[urls_pre.size()];
+            urls_pre.toArray(urls);
+            
+            // load jars
+            URLClassLoader urlClassLoader = new URLClassLoader(urls);
+            
+            // apply patches
+            new SkinFix().apply();
+            
+            // setup environment
+            System.setProperty("java.library.path", nativesDir.getAbsolutePath());
+            System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
+            
+            Class mainClass = urlClassLoader.loadClass("net.minecraft.client.Minecraft");
+            Method mainFunction = mainClass.getDeclaredMethod("main", String[].class);
+            
+            synchronized(lock)
+            {
+                mainFunction.invoke(null, new Object[] { new String[] { Main.authDataFile.username } });
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
     
     public void launch()
     {
@@ -96,6 +202,9 @@ public class Launcher
             pb.directory(new File(Main.config.gameDirectory));
             pb.inheritIO();
             Process proc = pb.start();
+            
+            // apply runtime patches
+            new SkinFix().apply();
             
             int exitCode = proc.waitFor();
             

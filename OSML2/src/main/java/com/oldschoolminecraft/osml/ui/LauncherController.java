@@ -11,12 +11,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
@@ -53,7 +55,7 @@ public class LauncherController
         new ClientUpdater(() ->
         {
             ((Stage) btnPlay.getScene().getWindow()).hide();
-            new Launcher().launch();
+            new Launcher().debugLaunch();
         }).start();
     }
     
@@ -73,6 +75,7 @@ public class LauncherController
             
             Scene scene = new Scene(root, 350, 400);
             
+            stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle(Main.loggedIn ? "Old School Minecraft" : "Login");
             stage.setResizable(false);
             stage.setScene(scene);
@@ -250,6 +253,10 @@ public class LauncherController
             lblVersion.setText(Main.CURRENT_VERSION);
             
             // username
+            lblUsername.setMaxWidth(Double.MAX_VALUE);
+            AnchorPane.setLeftAnchor(lblUsername, 0.0);
+            AnchorPane.setRightAnchor(lblUsername, 0.0);
+            lblUsername.setAlignment(Pos.CENTER);
             lblUsername.setText(Main.instance.profile.getName());
             
             // skin preview

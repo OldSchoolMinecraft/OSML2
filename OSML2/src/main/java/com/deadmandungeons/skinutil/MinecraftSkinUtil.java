@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.net.ssl.HttpsURLConnection;
 
 import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile;
 import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile.Skin;
@@ -51,9 +52,52 @@ public class MinecraftSkinUtil
         {
             try
             {
-                BufferedImage skinImage = ImageIO.read(new URL(skin.get().getUrl()));
+                BufferedImage skinImage = safeImageRead(skin.get().getUrl()); //ImageIO.read(new URL(skin.get().getUrl()));
                 if (skinImage != null)
                     return new SkinTexture(skinImage, skin.get().isSlimModel(), false);
+                else
+                    System.out.println("Issue reading skin");
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.log(Level.FINE, "Failed to read skin image for " + profile, e);
+            }
+        } else {
+            System.out.println("Skin not present");
+        }
+        // The hashcode of the player's UUID determines which defualt skin to use.
+        // Steve is used when the hashcode is even, and Alex (slim) is used when it is
+        // odd.
+        return (profile.getId().hashCode() & 1) == 0 ? STEVE_SKIN : ALEX_SKIN;
+    }
+    
+    private static BufferedImage safeImageRead(String url)
+    {
+        try
+        {
+            HttpsURLConnection httpcon = (HttpsURLConnection) new URL(url).openConnection(); 
+            httpcon.addRequestProperty("User-Agent", ""); 
+            return ImageIO.read(httpcon.getInputStream());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
+     * @param profile
+     * @author moderator_man
+     * @return a BufferedImage of the player's skin at 1x1 scale
+     */
+    public static BufferedImage getPlayerSkinRaw(MinecraftProfile profile)
+    {
+        Optional<Skin> skin = profile.getTextures().getSkin();
+        if (skin.isPresent())
+        {
+            try
+            {
+                BufferedImage skinImage = ImageIO.read(new URL(skin.get().getUrl()));
+                if (skinImage != null)
+                    return skinImage;
             } catch (Exception e) {
                 LOGGER.log(Level.FINE, "Failed to read skin image for " + profile, e);
             }
@@ -61,7 +105,7 @@ public class MinecraftSkinUtil
         // The hashcode of the player's UUID determines which defualt skin to use.
         // Steve is used when the hashcode is even, and Alex (slim) is used when it is
         // odd.
-        return (profile.getId().hashCode() & 1) == 0 ? STEVE_SKIN : ALEX_SKIN;
+        return (profile.getId().hashCode() & 1) == 0 ? STEVE_SKIN.getImage() : ALEX_SKIN.getImage();
     }
     
     /**
