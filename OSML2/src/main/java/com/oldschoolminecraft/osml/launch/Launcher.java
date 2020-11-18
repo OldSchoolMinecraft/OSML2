@@ -80,15 +80,6 @@ public class Launcher
                 
                 Main.modManager.applyMods();
                 
-                /*synchronized(this)
-                {
-                    File dir = Main.modsDir;
-                    for (File file : dir.listFiles())
-                        if (file.getName().endsWith(".tmp"))
-                            while (file.exists())
-                                Thread.sleep(100);
-                }*/
-                
                 System.out.println("Applied jarmods");
                 
                 clientFile = new File(Main.modsDir, "minecraft.jar");
@@ -114,10 +105,7 @@ public class Launcher
             Class mainClass = urlClassLoader.loadClass("net.minecraft.client.Minecraft");
             Method mainFunction = mainClass.getDeclaredMethod("main", String[].class);
             
-            synchronized(lock)
-            {
-                mainFunction.invoke(null, new Object[] { new String[] { Main.authDataFile.username } });
-            }
+            mainFunction.invoke(null, new Object[] { new String[] { Main.authDataFile.username } });
         } catch (Exception ex) {
             ex.printStackTrace();
         }
