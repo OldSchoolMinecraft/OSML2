@@ -8,12 +8,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.mods.Mod;
 import com.oldschoolminecraft.osml.patches.SkinFix;
 import com.oldschoolminecraft.osml.update.Library;
+import com.oldschoolminecraft.osml.update.VanillaLibrary;
+import com.oldschoolminecraft.osml.update.VanillaManifest;
 import com.oldschoolminecraft.osml.update.VersionManager;
 import com.oldschoolminecraft.osml.update.VersionManifest;
+import com.oldschoolminecraft.osml.util.ActionPipe;
 import com.oldschoolminecraft.osml.util.OS;
 import com.oldschoolminecraft.osml.util.Util;
 import com.oldschoolminecraft.osml.util.ZipUtil;
@@ -23,50 +27,62 @@ public class Launcher
 {
     public Launcher() {}
     
+    private ActionPipe launchEvent;
+    private ActionPipe exitEvent;
+    
+    public void setLaunchHandler(ActionPipe pipe)
+    {
+        launchEvent = pipe;
+    }
+    
+    public void setExitHandler(ActionPipe pipe)
+    {
+        exitEvent = pipe;
+    }
+    
     public void debugLaunch()
     {
         try
         {
-            VersionManifest manifest = new VersionManager().loadInternal("b1.7.3");
+            ObjectMapper mapper = new ObjectMapper();
+            VanillaManifest manifest = mapper.readValue(getClass().getResourceAsStream("/versions/b1.7.3-vanilla.json"), VanillaManifest.class);
             
             ArrayList<File> loadQueue = new ArrayList<File>();
-            for (String input : manifest.libraries)
+            for (VanillaLibrary lib : manifest.libraries)
             {
-                Library lib = new Library(input);
                 File libFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", lib.name, lib.version, lib.name, lib.version));
                 if (!libFile.exists())
                     System.out.println(String.format("Library doesn't exist: %s-%s", lib.name, lib.version));
+                else
+                    System.out.println(String.format("Library added to load queue: %s-%s", lib.name, lib.version));
                 loadQueue.add(libFile);
             }
-            Library clientLib = new Library(manifest.client);
-            File clientFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", clientLib.name, clientLib.version, clientLib.name, clientLib.version));
+            File clientFile = new File(Main.librariesDir, "minecraft/b1.7.3/minecraft-b1.7.3.jar");
             
             // prepare natives
-            String nativesInput = manifest.natives.windows;
+            File nativesFile;
             switch (OS.getOS())
             {
                 default:
-                    nativesInput = manifest.natives.windows;
+                    nativesFile = new File(Main.librariesDir, "natives_windows/b1.7.3/natives_windows-b1.7.3.jar");
                     break;
                 case Windows:
-                    nativesInput = manifest.natives.windows;
+                    nativesFile = new File(Main.librariesDir, "natives_windows/b1.7.3/natives_windows-b1.7.3.jar");
                     break;
                 case Linux:
-                    nativesInput = manifest.natives.linux;
+                    nativesFile = new File(Main.librariesDir, "natives_linux/b1.7.3/natives_linux-b1.7.3.jar");
                     break;
                 case Mac:
-                    nativesInput = manifest.natives.osx;
+                    nativesFile = new File(Main.librariesDir, "natives_osx/b1.7.3/natives_osx-b1.7.3.jar");
                     break;
             }
-            Library natives = new Library(nativesInput);
-            File nativesFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", natives.name, natives.version, natives.name, natives.version));
             File clientDir = clientFile.getParentFile();
             File nativesDir = new File(clientDir, "natives");
             
             if (!nativesDir.exists())
                 nativesDir.mkdir();
             
-            if (nativesFile.exists())
+            if (nativesFile.exists() && !Main.config.disableUpdates)
                 ZipUtil.unzip(nativesFile.getAbsolutePath(), nativesDir.getAbsolutePath());
             else
                 System.out.println("Natives file doesn't exist");
@@ -78,7 +94,6 @@ public class Launcher
             {
                 System.out.println("Applying jarmods...");
                 
-                Library client = new Library(manifest.client);
                 File moddedFile = new File(Main.modsDir, "minecraft.jar");
                 
                 if (moddedFile.exists())
@@ -104,6 +119,8 @@ public class Launcher
                 System.out.println("Applied jarmods");
                 
                 clientFile = moddedFile;
+            } else {
+                System.out.println("No mods available");
             }
             
             ArrayList<URL> urls_pre = new ArrayList<URL>();
@@ -126,7 +143,9 @@ public class Launcher
             Class mainClass = urlClassLoader.loadClass("net.minecraft.client.Minecraft");
             Method mainFunction = mainClass.getDeclaredMethod("main", String[].class);
             
-            mainFunction.invoke(null, new Object[] { new String[] { Main.authDataFile.username } });
+            mainFunction.invoke(null, new Object[] { new String[] { Main.authDataFile.username, Main.authDataFile.accessToken } });
+            
+            if (launchEvent != null) launchEvent.fire();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -159,8 +178,8 @@ public class Launcher
             for (String arg : jvm)
                 launchArguments.add(arg);
             
-            String nativesInput = manifest.natives.windows;
-            switch (OS.getOS())
+            String nativesInput = manifest.natives.windows.url;
+            /*switch (OS.getOS())
             {
                 default:
                     nativesInput = manifest.natives.windows;
@@ -174,7 +193,7 @@ public class Launcher
                 case Mac:
                     nativesInput = manifest.natives.osx;
                     break;
-            }
+            }*/
             Library natives = new Library(nativesInput);
             File nativesFile = new File(Main.librariesDir, String.format("%s/%s/%s-%s.jar", natives.name, natives.version, natives.name, natives.version));
             File clientDir = clientFile.getParentFile();

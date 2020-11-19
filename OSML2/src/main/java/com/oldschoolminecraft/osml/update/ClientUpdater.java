@@ -7,8 +7,7 @@ import java.util.ArrayList;
 
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.ui.UpdateController;
-import com.oldschoolminecraft.osml.util.OS;
-import com.oldschoolminecraft.osml.util.UpdateEvent;
+import com.oldschoolminecraft.osml.util.ActionPipe;
 import com.oldschoolminecraft.osml.util.Util;
 
 import javafx.application.Platform;
@@ -29,9 +28,9 @@ public class ClientUpdater extends Thread
     private ArrayList<Download> metaDownloads = new ArrayList<Download>();
     private ArrayList<Download> downloads = new ArrayList<Download>();
     
-    public UpdateEvent event;
+    public ActionPipe event;
     
-    public ClientUpdater(UpdateEvent event)
+    public ClientUpdater(ActionPipe event)
     {
         this.event = event;
     }
@@ -56,8 +55,8 @@ public class ClientUpdater extends Thread
             clientDL.getMeta();
             metaDownloads.add(clientDL);
             
-            String nativesInput = version.natives.windows;
-            switch (OS.getOS())
+            String nativesInput = version.natives.windows.url;
+            /*switch (OS.getOS())
             {
                 default:
                     nativesInput = version.natives.windows;
@@ -71,7 +70,7 @@ public class ClientUpdater extends Thread
                 case Mac:
                     nativesInput = version.natives.osx;
                     break;
-            }
+            }*/
             Download nativesDL = new Download(new Library(nativesInput));
             nativesDL.getMeta();
             metaDownloads.add(nativesDL);
@@ -130,7 +129,7 @@ public class ClientUpdater extends Thread
                     
                     closeUI();
                     controller.close();
-                    event.onComplete();
+                    event.fire();
                     return;
                 }
                 
@@ -192,7 +191,7 @@ public class ClientUpdater extends Thread
                 //controller.getOKButton().setDisable(false);
                 closeUI();
                 controller.close();
-                event.onComplete();
+                event.fire();
             });
         } catch (Exception ex) {
             ex.printStackTrace();

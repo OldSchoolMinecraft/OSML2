@@ -2,7 +2,7 @@ package com.oldschoolminecraft.osml.update;
 
 public class ClientNatives
 {
-    public String windows;
-    public String linux;
-    public String osx;
+    public HashedLinkObject windows;
+    public HashedLinkObject linux;
+    public HashedLinkObject osx;
 }

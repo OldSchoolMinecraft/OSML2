@@ -4,8 +4,9 @@ import com.deadmandungeons.skinutil.MinecraftSkinUtil;
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.auth.HydraAPI;
 import com.oldschoolminecraft.osml.launch.Launcher;
-import com.oldschoolminecraft.osml.update.ClientUpdater;
+import com.oldschoolminecraft.osml.update.VanillaUpdater;
 
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -52,10 +53,13 @@ public class LauncherController
     
     @FXML protected void onPlayAction(ActionEvent event)
     {
-        new ClientUpdater(() ->
+        setLocked(true);
+        btnPlay.setText("Loading...");
+        new VanillaUpdater(() ->
         {
-            ((Stage) btnPlay.getScene().getWindow()).hide();
-            new Launcher().debugLaunch();
+            Launcher launcher = new Launcher();
+            launcher.setLaunchHandler(() -> hide());
+            launcher.debugLaunch();
         }).start();
     }
     
@@ -290,6 +294,21 @@ public class LauncherController
         BackgroundImage myBI = new BackgroundImage(SwingFXUtils.toFXImage(MinecraftSkinUtil.getPlayerSkinFront(Main.instance.profile, 7).getImage(), null), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         playerPreview.setBackground(new Background(myBI));
         playerPreview.setStyle("-fx-effect: dropshadow(three-pass-box, black, 30, 0.3, 0, 0);");
+    }
+    
+    public void setLocked(boolean flag)
+    {
+        btnPlay.setDisable(flag);
+        btnLogout.setDisable(flag);
+        btnCosmetics.setDisable(flag);
+        btnMods.setDisable(flag);
+        btnSettings.setDisable(flag);
+        btnClose.setDisable(flag);
+    }
+    
+    public void hide()
+    {
+        Platform.runLater(() -> ((Stage) btnPlay.getScene().getWindow()).hide());
     }
     
     public void setStage(Stage stage)

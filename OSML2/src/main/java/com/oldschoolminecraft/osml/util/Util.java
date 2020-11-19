@@ -240,6 +240,7 @@ public class Util
             File targetFile = new File(path);
             if (targetFile.exists() && deleteIfExists)
                 targetFile.delete();
+            targetFile.getParentFile().mkdirs();
 
             URL fileURL = new URL(url);
             HttpURLConnection httpConn = (HttpURLConnection) fileURL.openConnection();
@@ -275,6 +276,20 @@ public class Util
         byte[] buffer = new byte[8192];
         int count;
         MessageDigest md = MessageDigest.getInstance("SHA-256");
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        while ((count = bis.read(buffer)) > 0)
+            md.update(buffer, 0, count);
+        bis.close();
+        BigInteger hash = new BigInteger(1, md.digest());
+        return hash.toString(16);
+    }
+    
+    public static String sha1File(String file) throws Exception
+    {
+        if (!new File(file).exists()) return "";
+        byte[] buffer = new byte[8192];
+        int count;
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
         while ((count = bis.read(buffer)) > 0)
             md.update(buffer, 0, count);

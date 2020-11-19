@@ -18,7 +18,7 @@ public class UpdateController
     
     @FXML protected void okAction(ActionEvent event)
     {
-        Main.clientUpdater.event.onComplete();
+        Main.clientUpdater.event.fire();
         close();
     }
     
