@@ -1,19 +1,27 @@
 package com.oldschoolminecraft.osml;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.deadmandungeons.skinutil.MinecraftSkinUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.auth.AuthFile;
 import com.oldschoolminecraft.osml.auth.HydraAPI;
+import com.oldschoolminecraft.osml.mods.Mod;
 import com.oldschoolminecraft.osml.mods.ModManager;
 import com.oldschoolminecraft.osml.ui.LauncherController;
 import com.oldschoolminecraft.osml.ui.LoginController;
 import com.oldschoolminecraft.osml.update.ClientUpdater;
+import com.oldschoolminecraft.osml.update.Library;
+import com.oldschoolminecraft.osml.update.VersionManager;
+import com.oldschoolminecraft.osml.update.VersionManifest;
 import com.oldschoolminecraft.osml.util.Configuration;
 import com.oldschoolminecraft.osml.util.JSONWebResponse;
 import com.oldschoolminecraft.osml.util.Util;
+import com.oldschoolminecraft.osml.util.ZipUtil;
 import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile;
 import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile.Skin;
 import com.oldschoolminecraft.osml.util.minecraft.MinecraftProfile.Textures;
@@ -61,6 +69,7 @@ public class Main extends Application
     public static Stage loginStage;
     public static Stage launcherStage;
     public static LoginController loginController;
+    public static LauncherController launcherController;
     
     private double xOffset = 0;
     private double yOffset = 0;
@@ -236,6 +245,7 @@ public class Main extends Application
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/LauncherUI.fxml"));
             Parent root = loader.load();
             LauncherController controller = (LauncherController) loader.getController();
+            launcherController = controller;
             Scene scene = new Scene(root, 600, 400);
             
             stage.setTitle("Launcher");

@@ -9,11 +9,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -35,6 +39,58 @@ public class Util
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        }
+    }
+    
+    public static boolean deleteDirectory(File dir)
+    {
+        File[] files = dir.listFiles();
+        if (files != null)
+            for (File file : files)
+                deleteDirectory(file);
+        return dir.delete();
+    }
+    
+    public static String uploadFile(String url, String attachmentFilePath)
+    {
+        String charset = "UTF-8";
+        File binaryFile = new File(attachmentFilePath);
+        String boundary = "------------------------" + Long.toHexString(System.currentTimeMillis());
+        String CRLF = "\r\n";
+        int responseCode = 0;
+
+        try
+        {
+            URLConnection connection = new URL(url).openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            connection.addRequestProperty("User-Agent", "CheckpaySrv/1.0.0");
+            connection.addRequestProperty("Accept", "*/*");
+            OutputStream output = connection.getOutputStream();
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true);
+            writer.append("--" + boundary).append(CRLF);
+            writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"" + binaryFile.getName() + "\"").append(CRLF);
+            writer.append("Content-Type: application/octet-stream").append(CRLF);
+            writer.append(CRLF).flush();
+            Files.copy(binaryFile.toPath(), output);
+            output.flush();
+            writer.append(CRLF).append("--" + boundary + "--").flush();
+            responseCode = ((HttpURLConnection) connection).getResponseCode();
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream())))
+            {
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = in.readLine()) != null)
+                    response.append(line);
+                if (responseCode != 200)
+                    System.out.println(String.format("Request failed (%s): %s", responseCode, response.toString()));
+                else
+                    System.out.println(String.format("Request succeeded: %s", response.toString()));
+                return response.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         }
     }
     

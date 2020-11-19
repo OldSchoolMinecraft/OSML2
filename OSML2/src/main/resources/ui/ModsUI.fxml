@@ -8,9 +8,10 @@
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oldschoolminecraft.osml.ui.ModsController">
    <children>
       <ListView fx:id="lstMods" layoutX="8.0" layoutY="9.0" prefHeight="447.0" prefWidth="386.0" />
-      <Button fx:id="btnAddMod" layoutX="8.0" layoutY="466.0" mnemonicParsing="false" onAction="#onAddModAction" prefHeight="25.0" prefWidth="79.0" text="Add Mod" />
-      <Button fx:id="btnRemoveMod" layoutX="95.0" layoutY="466.0" mnemonicParsing="false" onAction="#onRemoveModAction" text="Remove Mod" />
-      <Button fx:id="btnClose" layoutX="349.0" layoutY="466.0" mnemonicParsing="false" onAction="#onCloseAction" prefHeight="25.0" prefWidth="45.0" text="Close" />
-      <Button layoutX="271.0" layoutY="466.0" mnemonicParsing="false" text="Force Save" />
+      <Button fx:id="btnAddMod" layoutX="8.0" layoutY="466.0" mnemonicParsing="false" onAction="#onAddModAction" prefHeight="25.0" prefWidth="52.0" text="Add" />
+      <Button fx:id="btnRemoveMod" layoutX="65.0" layoutY="466.0" mnemonicParsing="false" onAction="#onRemoveModAction" text="Remove" />
+      <Button fx:id="btnClose" layoutX="307.0" layoutY="466.0" mnemonicParsing="false" onAction="#onCloseAction" prefHeight="25.0" prefWidth="87.0" text="Save &amp; Close" />
+      <Button fx:id="btnMoveUp" layoutX="129.0" layoutY="466.0" mnemonicParsing="false" onAction="#onMoveUp" text="Move Up" />
+      <Button fx:id="btnMoveDown" layoutX="198.0" layoutY="466.0" mnemonicParsing="false" onAction="#onMoveDown" text="Move Down" />
    </children>
 </Pane>

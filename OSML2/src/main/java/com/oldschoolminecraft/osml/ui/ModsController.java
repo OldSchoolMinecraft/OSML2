@@ -20,6 +20,8 @@ public class ModsController
     
     @FXML protected Button btnAddMod;
     @FXML protected Button btnRemoveMod;
+    @FXML protected Button btnMoveUp;
+    @FXML protected Button btnMoveDown;
     @FXML protected Button btnClose;
     
     @FXML protected void initialize()
@@ -35,7 +37,7 @@ public class ModsController
             FileChooser fileChooser = new FileChooser();
             
             ExtensionFilter jarFilter = new ExtensionFilter("JAR files (*.jar)", "*.jar");
-            ExtensionFilter classFilter = new ExtensionFilter("CLASS files (*.class)", "*.class");
+            ExtensionFilter classFilter = new ExtensionFilter("ZIP files (*.zip)", "*.zip");
             
             fileChooser.getExtensionFilters().add(jarFilter);
             fileChooser.getExtensionFilters().add(classFilter);
@@ -55,6 +57,48 @@ public class ModsController
         {
             for (Mod mod : lstMods.getSelectionModel().getSelectedItems())
                 lstMods.getItems().remove(mod);
+        }
+    }
+    
+    @FXML protected void onMoveUp(ActionEvent event)
+    {
+        if (!lstMods.getSelectionModel().isEmpty())
+        {
+            int index = lstMods.getSelectionModel().getSelectedIndex();
+            if (index > 0)
+            {
+                int newIndex = index - 1;
+                
+                if (newIndex < 0 || newIndex >= lstMods.getItems().size())
+                    return;
+                
+                Mod mod = lstMods.getSelectionModel().getSelectedItem();
+                
+                lstMods.getItems().remove(mod);
+                lstMods.getItems().add(newIndex, mod);
+                lstMods.getSelectionModel().select(newIndex);
+            }
+        }
+    }
+    
+    @FXML protected void onMoveDown(ActionEvent event)
+    {
+        if (!lstMods.getSelectionModel().isEmpty())
+        {
+            int index = lstMods.getSelectionModel().getSelectedIndex();
+            if (index < lstMods.getItems().size() - 1)
+            {
+                int newIndex = index + 1;
+                
+                if (newIndex < 0 || newIndex >= lstMods.getItems().size())
+                    return;
+                
+                Mod mod = lstMods.getSelectionModel().getSelectedItem();
+                
+                lstMods.getItems().remove(mod);
+                lstMods.getItems().add(newIndex, mod);
+                lstMods.getSelectionModel().select(newIndex);
+            }
         }
     }
     

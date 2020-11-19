@@ -69,8 +69,12 @@ public class ModManager
             if (clientFile.exists())
                 Files.copy(Paths.get(clientFile.getAbsolutePath()), Paths.get(playJar.getAbsolutePath()));
             
+            File tmpDir = new File(Main.modsDir, "tmp");
+            if (!tmpDir.exists())
+                tmpDir.mkdirs();
+            
             for (Mod mod : mods)
-                ZipUtil.copyContents(mod.getPath(), playJar.getAbsolutePath());
+                ZipUtil.copyContents(mod.getPath(), playJar.getAbsolutePath(), tmpDir.getAbsolutePath());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

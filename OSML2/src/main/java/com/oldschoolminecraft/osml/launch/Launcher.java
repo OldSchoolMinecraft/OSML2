@@ -4,10 +4,12 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.oldschoolminecraft.osml.Main;
+import com.oldschoolminecraft.osml.mods.Mod;
 import com.oldschoolminecraft.osml.patches.SkinFix;
 import com.oldschoolminecraft.osml.update.Library;
 import com.oldschoolminecraft.osml.update.VersionManager;
@@ -15,8 +17,6 @@ import com.oldschoolminecraft.osml.update.VersionManifest;
 import com.oldschoolminecraft.osml.util.OS;
 import com.oldschoolminecraft.osml.util.Util;
 import com.oldschoolminecraft.osml.util.ZipUtil;
-
-import de.schlichtherle.truezip.file.TFile;
 
 @SuppressWarnings("all")
 public class Launcher
@@ -78,11 +78,32 @@ public class Launcher
             {
                 System.out.println("Applying jarmods...");
                 
-                Main.modManager.applyMods();
+                Library client = new Library(manifest.client);
+                File moddedFile = new File(Main.modsDir, "minecraft.jar");
+                
+                if (moddedFile.exists())
+                    moddedFile.delete();
+                
+                if (clientFile.exists())
+                    Files.copy(Paths.get(clientFile.getAbsolutePath()), Paths.get(moddedFile.getAbsolutePath()));
+                
+                File modsTmpDir = new File(Main.modsDir, "tmp");
+                if (modsTmpDir.exists())
+                    Util.deleteDirectory(modsTmpDir);
+                modsTmpDir.mkdirs();
+                
+                ZipUtil.extractAllTo(moddedFile.getAbsolutePath(), modsTmpDir.getAbsolutePath());
+                
+                for (Mod mod : Main.modManager.mods)
+                    ZipUtil.extractAllTo(mod.getPath(), modsTmpDir.getAbsolutePath());
+                
+                new File(modsTmpDir, "META-INF/MANIFEST.MF").delete();
+                
+                ZipUtil.zipAllTo(modsTmpDir.getAbsolutePath(), moddedFile.getAbsolutePath());
                 
                 System.out.println("Applied jarmods");
                 
-                clientFile = new File(Main.modsDir, "minecraft.jar");
+                clientFile = moddedFile;
             }
             
             ArrayList<URL> urls_pre = new ArrayList<URL>();

@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" />
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.oldschoolminecraft.osml.ui.CosmeticsController">
+   <children>
+      <Label layoutX="105.0" layoutY="14.0" text="This is a work-in-progress." textAlignment="CENTER" />
+      <Label layoutX="59.0" layoutY="31.0" text="For now, all you can do is change your skin." textAlignment="CENTER" />
+      <Label layoutX="100.0" layoutY="48.0" text="Sorry for the inconvenience." textAlignment="CENTER" />
+      <Label layoutX="129.0" layoutY="67.0" text="-moderator_man" textAlignment="CENTER" />
+      <Button fx:id="btnChooseSkin" layoutX="105.0" layoutY="111.0" mnemonicParsing="false" onAction="#onChooseSkinAction" text="Choose Skin..." />
+      <Button fx:id="btnClose" layoutX="196.0" layoutY="111.0" mnemonicParsing="false" onAction="#onCloseAction" prefHeight="25.0" prefWidth="52.0" text="Close" />
+   </children>
+</Pane>

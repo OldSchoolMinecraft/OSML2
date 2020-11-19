@@ -46,7 +46,7 @@ public class LauncherController
     @FXML protected Label lblVersion;
     @FXML protected Label lblUsername;
     
-    private double modsXOffset, modsYOffset;
+    private double modsXOffset, modsYOffset, cosmeticsXOffset, cosmeticsYOffset;
     
     private Stage stage;
     
@@ -123,19 +123,38 @@ public class LauncherController
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/CosmeticsUI.fxml"));
             Parent root = loader.load();
             
-            Scene scene = new Scene(root, 178, 160);
+            Scene scene = new Scene(root, 350, 150);
             
             stage.setTitle("Cosmetics");
             stage.setResizable(false);
             stage.setScene(scene);
             
-            stage.initOwner(Main.loginStage);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.initModality(Modality.APPLICATION_MODAL);
             
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            stage.setX((screenBounds.getWidth() - root.prefWidth(178)) / 2);
-            stage.setY((screenBounds.getHeight() - root.prefHeight(160)) / 2);
+            stage.setX((screenBounds.getWidth() - root.prefWidth(350)) / 2);
+            stage.setY((screenBounds.getHeight() - root.prefHeight(150)) / 2);
+            
+            root.setOnMousePressed(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    cosmeticsXOffset = event.getSceneX();
+                    cosmeticsYOffset = event.getSceneY();
+                }
+            });
+            
+            root.setOnMouseDragged(new EventHandler<MouseEvent>()
+            {
+                @Override
+                public void handle(MouseEvent event)
+                {
+                    stage.setX(event.getScreenX() - cosmeticsXOffset);
+                    stage.setY(event.getScreenY() - cosmeticsYOffset);
+                }
+            });
             
             stage.showAndWait();
         } catch (Exception ex) {
@@ -260,12 +279,17 @@ public class LauncherController
             lblUsername.setText(Main.instance.profile.getName());
             
             // skin preview
-            BackgroundImage myBI = new BackgroundImage(SwingFXUtils.toFXImage(MinecraftSkinUtil.getPlayerSkinFront(Main.instance.profile, 7).getImage(), null), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
-            playerPreview.setBackground(new Background(myBI));
-            playerPreview.setStyle("-fx-effect: dropshadow(three-pass-box, black, 30, 0.3, 0, 0);");
+            updateSkin();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public void updateSkin()
+    {
+        BackgroundImage myBI = new BackgroundImage(SwingFXUtils.toFXImage(MinecraftSkinUtil.getPlayerSkinFront(Main.instance.profile, 7).getImage(), null), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+        playerPreview.setBackground(new Background(myBI));
+        playerPreview.setStyle("-fx-effect: dropshadow(three-pass-box, black, 30, 0.3, 0, 0);");
     }
     
     public void setStage(Stage stage)
