@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.mods.Mod;
-import com.oldschoolminecraft.osml.patches.SkinFix;
+import com.oldschoolminecraft.osml.patches.HttpURLConnectionPatch;
 import com.oldschoolminecraft.osml.update.Library;
 import com.oldschoolminecraft.osml.update.VanillaLibrary;
 import com.oldschoolminecraft.osml.update.VanillaManifest;
@@ -134,7 +134,8 @@ public class Launcher
             URLClassLoader urlClassLoader = new URLClassLoader(urls);
             
             // apply patches
-            new SkinFix().apply();
+            //TODO: allow user to enable/disable patches
+            new HttpURLConnectionPatch().apply();
             
             // setup environment
             System.setProperty("java.library.path", nativesDir.getAbsolutePath());
@@ -230,9 +231,6 @@ public class Launcher
             pb.directory(new File(Main.config.gameDirectory));
             pb.inheritIO();
             Process proc = pb.start();
-            
-            // apply runtime patches
-            new SkinFix().apply();
             
             int exitCode = proc.waitFor();
             

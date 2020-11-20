@@ -26,7 +26,7 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <Button fx:id="btnRegister" layoutX="99.0" layoutY="361.0" mnemonicParsing="false" onAction="#onRegisterAction" prefHeight="25.0" prefWidth="149.0" text="Register Account">
+      <Button fx:id="btnRegister" disable="true" layoutX="99.0" layoutY="361.0" mnemonicParsing="false" onAction="#onRegisterAction" prefHeight="25.0" prefWidth="149.0" text="Register Account" visible="false">
          <font>
             <Font name="System Italic" size="12.0" />
          </font>

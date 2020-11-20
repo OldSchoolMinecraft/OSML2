@@ -49,7 +49,7 @@ public class Main extends Application
 {
     public static Main instance;
     
-    public static String CURRENT_VERSION = "1.0.0";
+    public static String CURRENT_VERSION = "1.0.0-b01";
     
     public static boolean loggedIn = false, debug = false;
     public static AuthFile authDataFile;
