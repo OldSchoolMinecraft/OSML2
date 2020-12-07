@@ -2,17 +2,21 @@ package com.oldschoolminecraft.osml.ui;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.mods.Mod;
 
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class ModsController
 {
@@ -26,6 +30,16 @@ public class ModsController
     
     @FXML protected void initialize()
     {
+        lstMods.setCellFactory(CheckBoxListCell.forListView(new Callback<Mod, ObservableValue<Boolean>>()
+        {
+            public ObservableValue<Boolean> call(Mod param)
+            {
+                return param.enabledProperty();
+            }
+        }));
+        
+        Main.modManager.mods.clear();
+        Main.modManager.load();
         for (Mod mod : Main.modManager.mods)
             lstMods.getItems().add(mod);
     }
@@ -36,16 +50,15 @@ public class ModsController
         {
             FileChooser fileChooser = new FileChooser();
             
-            ExtensionFilter jarFilter = new ExtensionFilter("JAR files (*.jar)", "*.jar");
-            ExtensionFilter classFilter = new ExtensionFilter("ZIP files (*.zip)", "*.zip");
+            ExtensionFilter modFilter = new ExtensionFilter("MOD files (*.jar, *.zip)", "*.jar", "*.zip");
+            fileChooser.getExtensionFilters().add(modFilter);
             
-            fileChooser.getExtensionFilters().add(jarFilter);
-            fileChooser.getExtensionFilters().add(classFilter);
+            List<File> files = fileChooser.showOpenMultipleDialog(btnAddMod.getScene().getWindow());
             
-            File file = fileChooser.showOpenDialog(btnAddMod.getScene().getWindow());
-            
-            if (file != null && file.exists())
-                lstMods.getItems().add(new Mod(file.getName(), file.getAbsolutePath()));
+            if (files != null) // sanity check in case the operation is cancelled
+                for (File file : files)
+                    if (file != null && file.exists())
+                        lstMods.getItems().add(new Mod(file.getName(), file.getAbsolutePath()));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -104,10 +117,10 @@ public class ModsController
     
     @FXML protected void onCloseAction()
     {
-        Main.modManager.mods.clear();
+        ArrayList<Mod> mods = new ArrayList<Mod>();
         for (Mod mod : lstMods.getItems())
-            Main.modManager.mods.add(mod);
-        Main.modManager.save();
+            mods.add(mod);
+        Main.modManager.save(mods);
         ((Stage) btnClose.getScene().getWindow()).close();
     }
     

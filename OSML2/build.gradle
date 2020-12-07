@@ -10,6 +10,8 @@ buildscript
 		
 		classpath group: 'net.bytebuddy', name: 'byte-buddy', version: '1.10.18'
 		classpath group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.10.18'
+		
+		classpath group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
     }
 	
     repositories
@@ -49,6 +51,7 @@ dependencies
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
 	compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.10.18'
 	compile group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.10.18'
+	compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
 	
 	//extraLibs group: 'org.json', name: 'json', version: '20200518'
 	//extraLibs group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.2'

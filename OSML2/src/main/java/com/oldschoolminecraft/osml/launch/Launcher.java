@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oldschoolminecraft.osml.Main;
 import com.oldschoolminecraft.osml.mods.Mod;
 import com.oldschoolminecraft.osml.patches.HttpURLConnectionPatch;
+import com.oldschoolminecraft.osml.patches.MinecraftPatch;
+import com.oldschoolminecraft.osml.patches.SocketPatch;
 import com.oldschoolminecraft.osml.update.Library;
 import com.oldschoolminecraft.osml.update.VanillaLibrary;
 import com.oldschoolminecraft.osml.update.VanillaManifest;
@@ -110,7 +112,8 @@ public class Launcher
                 ZipUtil.extractAllTo(moddedFile.getAbsolutePath(), modsTmpDir.getAbsolutePath());
                 
                 for (Mod mod : Main.modManager.mods)
-                    ZipUtil.extractAllTo(mod.getPath(), modsTmpDir.getAbsolutePath());
+                    if (mod.enabledProperty().get()) // we only want enabled mods to get extracted
+                        ZipUtil.extractAllTo(mod.getPath(), modsTmpDir.getAbsolutePath());
                 
                 new File(modsTmpDir, "META-INF/MANIFEST.MF").delete();
                 
@@ -136,6 +139,10 @@ public class Launcher
             // apply patches
             //TODO: allow user to enable/disable patches
             new HttpURLConnectionPatch().apply();
+            //new MinecraftPatch(urlClassLoader).apply();
+            //new SocketPatch().apply();
+            
+            Main.urlClassLoader = urlClassLoader;
             
             // setup environment
             System.setProperty("java.library.path", nativesDir.getAbsolutePath());

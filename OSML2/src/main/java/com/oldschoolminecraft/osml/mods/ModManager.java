@@ -22,30 +22,36 @@ public class ModManager
         {
             if (!Main.modsManifestFile.exists())
             {
-                save();
+                save(mods);
                 return;
             }
             
             ObjectMapper mapper = new ObjectMapper();
             ModsManifest manifest = mapper.readValue(Main.modsManifestFile, ModsManifest.class);
-            for (String mod : manifest.mods)
+            for (String mod : manifest.mods.keySet())
             {
                 File modFile = new File(mod);
-                mods.add(new Mod(modFile.getName(), modFile.getAbsolutePath()));
+                Mod modObj = new Mod(modFile.getName(), modFile.getAbsolutePath());
+                modObj.setEnabled(manifest.mods.get(mod));
+                mods.add(modObj);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
     
-    public void save()
+    public void save(ArrayList<Mod> mods)
     {
         try
         {
             ObjectMapper mapper = new ObjectMapper();
             ModsManifest manifest = new ModsManifest();
-            for (Mod mod : mods)
-                manifest.mods.add(mod.getPath());
+            for (int i = 0; i < mods.size(); i++)
+            {
+                Mod mod = mods.get(i);
+                manifest.mods.put(mod.getPath(), mod.enabledProperty().get());
+                //System.out.println(String.format("(Manifest) Saved '%s' at index '%s'", mod.getName(), i));
+            }
             mapper.writeValue(Main.modsManifestFile, manifest);
         } catch (Exception ex) {
             ex.printStackTrace();

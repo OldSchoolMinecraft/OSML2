@@ -1,6 +1,7 @@
 package com.oldschoolminecraft.osml.util;
 
 import java.awt.Desktop;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,12 +21,28 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 
+import javax.imageio.ImageIO;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.json.JSONObject;
 
 public class Util
 {
+    public static BufferedImage getImageFromURL(String url)
+    {
+        try
+        {
+            HttpsURLConnection httpClient = (HttpsURLConnection) new URL(url).openConnection();
+            httpClient.setRequestMethod("GET");
+            httpClient.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101 Firefox/79.0");
+            
+            return ImageIO.read(httpClient.getInputStream());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
     /*
      * Thank you JuliusVan for the most retarded term known to man (netpage).
      */

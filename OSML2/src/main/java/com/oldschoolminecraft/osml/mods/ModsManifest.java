@@ -1,13 +1,13 @@
 package com.oldschoolminecraft.osml.mods;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class ModsManifest
 {
-    public ArrayList<String> mods;
+    public LinkedHashMap<String, Boolean> mods;
     
     public ModsManifest()
     {
-        mods = new ArrayList<String>();
+        mods = new LinkedHashMap<String, Boolean>();
     }
 }
